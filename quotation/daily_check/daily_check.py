@@ -13,8 +13,9 @@ pro = ts.pro_api()
 
 if __name__ == '__main__':
     # 京东方A行情
-    # df = pro.daily(ts_code='000725.SZ', start_date='20200601', end_date='20200715')
-    df = pro.daily(trade_date='20200716')
+    df = pro.daily(ts_code='000725.SZ', start_date='20200601', end_date='20200715')
+    # 全部股票数据
+    # df = pro.daily(trade_date='20200716')
 
     print("京东方A 日行情是:")
     print(df)
