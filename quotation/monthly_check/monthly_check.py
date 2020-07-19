@@ -13,9 +13,8 @@ pro = ts.pro_api()
 
 if __name__ == '__main__':
     # 京东方A行情
-    df = pro.daily(ts_code='000725.SZ', start_date='20200601', end_date='20200715')
+    df = pro.monthly(ts_code='000725.SZ', start_date='20200201', end_date='20200715',
+                    fields='ts_code,trade_date,open,high,low,close,vol,amount')
 
-    print("京东方A行情是:")
+    print("京东方A 月行情是:")
     print(df)
-    print("*" * 100)
-    print(df.get("open"))
