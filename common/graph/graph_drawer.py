@@ -13,9 +13,19 @@ def draw_plot(x, y, x_label, title):
     plt.show()
 
 
+# 默认绘制效果图
 def draw_default_plot(stock_df, title):
     x = stock_df['close'].index[::-1]
     y = stock_df['close'].values[::-1]
+    x_label = stock_df['trade_date'].values[::-1]
+
+    draw_plot(x, y, x_label, title)
+
+
+# 绘制指定字段的折线图
+def draw_field_plot(stock_df, field, title):
+    x = stock_df[field].index[::-1]
+    y = stock_df[field].values[::-1]
     x_label = stock_df['trade_date'].values[::-1]
 
     draw_plot(x, y, x_label, title)
@@ -41,7 +51,7 @@ def draw_compare_plot(x1, y1, y2, x_label, title):
     plt.show()
 
 
-# 默认绘制方法
+# 默认比较折线图方法
 def draw_default_compare_plot(stock_df, index_df, title):
     x1 = stock_df['close'].index[::-1]
     y1 = stock_df['close'].values[::-1]
@@ -49,3 +59,14 @@ def draw_default_compare_plot(stock_df, index_df, title):
     x_label = stock_df['trade_date'].values[::-1]
 
     draw_compare_plot(x1, y1, y2, x_label, title)
+
+
+# 绘制指定字段的比较折线图
+def draw_default_compare_plot(stock_df, index_df, field, title):
+    x1 = stock_df[field].index[::-1]
+    y1 = stock_df[field].values[::-1]
+    y2 = index_df[field].values[::-1]
+    x_label = stock_df['trade_date'].values[::-1]
+
+    draw_compare_plot(x1, y1, y2, x_label, title)
+

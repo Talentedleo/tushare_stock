@@ -19,7 +19,7 @@ def init():
 
 
 def get_stock_df(stock_code, start_date, end_date):
-    # 京东方A行情
+    # 单个股票周数据
     return pro.weekly(ts_code=stock_code, start_date=start_date, end_date=end_date,
                       fields='ts_code,trade_date,close,vol,amount')
 

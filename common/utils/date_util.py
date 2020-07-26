@@ -9,4 +9,4 @@ def get_end_date():
 
 
 if __name__ == '__main__':
-    get_end_date()
+    print(get_end_date())
