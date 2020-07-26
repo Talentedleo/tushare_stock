@@ -62,7 +62,7 @@ def draw_default_compare_plot(stock_df, index_df, title):
 
 
 # 绘制指定字段的比较折线图
-def draw_default_compare_plot(stock_df, index_df, field, title):
+def draw_field_compare_plot(stock_df, index_df, field, title):
     x1 = stock_df[field].index[::-1]
     y1 = stock_df[field].values[::-1]
     y2 = index_df[field].values[::-1]
