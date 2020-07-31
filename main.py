@@ -16,4 +16,5 @@ if __name__ == '__main__':
 
     index_df = cli.get_index_df_weekly()
     print('---- 绘制股票和指数的比较图(周) ----')
+    # graph.draw_default_plot(index_df, '{} Stock Market'.format(stock_code))
     graph.draw_default_compare_plot(stock_df, index_df, '{} week data'.format(stock_code))
