@@ -1,4 +1,3 @@
-import pandas as pd
 import tushare as ts
 
 from common.utils import data_saver as saver
@@ -13,11 +12,6 @@ class Client:
 
         # 设置token
         ts.set_token(config.get_value('TOKEN'))
-        # 设置打印完整性
-        pd.set_option('display.max_columns', 1000)
-        pd.set_option('display.width', 1000)
-        pd.set_option('display.max_colwidth', 1000)
-
         pro = ts.pro_api()
 
         self.stock_code = stock_code

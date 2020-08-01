@@ -1,4 +1,5 @@
 import os
+
 import pandas as pd
 
 # 获取当前项目根目录
@@ -16,8 +17,12 @@ def read_from_csv(file_name):
     return pd.read_csv(file_path)
 
 
-def get_csv_name(date, code, start_date, end_date):
-    return '/' + date + '/' + code.replace('.', '') + '_' + start_date + '_' + end_date + '.csv'
+def get_csv_name(pre, code, start_date, end_date):
+    return '/' + pre + '/' + code.replace('.', '') + '_' + start_date + '_' + end_date + '.csv'
+
+
+def get_csv_name(pre, code, end_date):
+    return '/' + pre + '/' + code.replace('.', '') + '_' + end_date + '.csv'
 
 
 def check_file_existed(file_name):
