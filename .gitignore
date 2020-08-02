@@ -1,4 +1,5 @@
 *.pyc
+*.csv
 
 .idea/
 .idea/vcs.xml

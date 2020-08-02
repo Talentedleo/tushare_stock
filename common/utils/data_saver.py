@@ -21,7 +21,7 @@ def get_csv_name(pre, code, start_date, end_date):
     return '/' + pre + '/' + code.replace('.', '') + '_' + start_date + '_' + end_date + '.csv'
 
 
-def get_csv_name(pre, code, end_date):
+def get_csv_data_name(pre, code, end_date):
     return '/' + pre + '/' + code.replace('.', '') + '_' + end_date + '.csv'
 
 
