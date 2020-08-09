@@ -39,7 +39,7 @@ class Filter:
                                  fields='ts_code,trade_date,turnover_rate,pe,total_mv')
             # ---------------------------------------
             # 自定义过滤条件, pe 静态市盈率, total_mv 总市值, turnover_rate 换手率
-            df = df.drop(df[(df['pe'] > 150) | (df['total_mv'] < 2000000) | (df['turnover_rate'] < 5)].index)
+            df = df.drop(df[(df['pe'] > 100) | (df['total_mv'] < 1500000) | (df['turnover_rate'] < 5)].index)
             # ---------------------------------------
             # 删除有空NaN的行
             df = df.dropna(axis=0, how='any')
