@@ -98,3 +98,19 @@ class Client:
             if len(df) != 0:
                 saver.save_csv(df, file_name)
         return df
+
+    def get_stock_info_df(self):
+        # 通用行情接口
+        # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
+        file_name = saver.get_csv_name('stock_info', self.stock_code, self.start_date, self.end_date)
+        if saver.check_file_existed(file_name):
+            print('---- 读取csv数据 ----')
+            df = saver.read_from_csv(file_name)
+        else:
+            # 换手率tor，量比vr, 均线
+            df = ts.pro_bar(ts_code=self.stock_code, start_date=self.start_date, end_date=self.end_date,
+                            factors=['tor', 'vr'], ma=[5, 20, 60])
+            print('---- 保存csv数据 ----')
+            if len(df) != 0:
+                saver.save_csv(df, file_name)
+        return df
