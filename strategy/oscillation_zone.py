@@ -1,5 +1,9 @@
 import pandas as pd
 
+from common.utils.logger import Logger
+
+log = Logger(__name__).logger
+
 
 def get_oscillation_zone_df(df, field, default_period=5):
     """
@@ -12,7 +16,7 @@ def get_oscillation_zone_df(df, field, default_period=5):
     try:
         pre = df[field].head(1).values[0]
     except IndexError:
-        print("Empty data.")
+        log.info("Empty data.")
         return None
 
     result_df = pd.DataFrame()
@@ -31,4 +35,3 @@ def get_oscillation_zone_df(df, field, default_period=5):
             period = default_period
         pre = row[field]
     return result_df
-

@@ -3,7 +3,10 @@ from retrying import retry
 
 from common.utils import data_saver as saver
 from common.utils import date_util
+from common.utils.logger import Logger
 from common.utils import yml_loader as config
+
+log = Logger(__name__).logger
 
 
 class Filter:
@@ -21,7 +24,7 @@ class Filter:
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
         stock_list_name = saver.get_csv_data_name('stocks', 'all', end_date=self.last_bus_day)
         if saver.check_file_existed(stock_list_name):
-            print('---- 读取csv数据 ----')
+            log.info('---- 读取csv数据 ----')
             data_list = saver.read_from_csv(stock_list_name)
         else:
             data_list = pro.stock_basic(exchange='', list_status='L',
@@ -35,7 +38,7 @@ class Filter:
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
         stock_name = saver.get_csv_data_name('stock_info', 'recommended', end_date=self.last_bus_day)
         if saver.check_file_existed(stock_name):
-            print('---- 读取csv数据 ----')
+            log.info('---- 读取csv数据 ----')
             df = saver.read_from_csv(stock_name)
         else:
             df = pro.daily_basic(ts_code='', trade_date=self.last_bus_day,

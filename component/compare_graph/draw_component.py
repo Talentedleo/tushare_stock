@@ -1,13 +1,15 @@
 import common.graph.graph_drawer as graph
 from common.quotation.data_filter import Filter
 from common.quotation.data_wrapper import Client
-from common.quotation.data_info import BasicInfo
 import common.quotation.indicator as indicator
 from common.utils import yml_loader as config
 from common.utils import mapping_util
 from strategy import oscillation_zone as strategy
 import talib as ta
 import time
+from common.utils.logger import Logger
+
+log = Logger(__name__).logger
 
 if __name__ == '__main__':
     stock = config.get_value('STOCK')
@@ -19,9 +21,9 @@ if __name__ == '__main__':
 
     cli = Client(stock_code, days, fields)
     # 日数据
-    # stock_df = cli.get_stock_df_daily()
+    stock_df = cli.get_stock_df_daily()
     # 周数据
-    stock_df = cli.get_stock_df_weekly()
+    # stock_df = cli.get_stock_df_weekly()
 
     # atr数据
     stock_df = indicator.get_atr_df(stock_df)
@@ -43,5 +45,5 @@ if __name__ == '__main__':
     # index_df = cli.get_index_df_daily()
     # 周指数
     # index_df = cli.get_index_df_weekly()
-    # print('---- 绘制股票和指数的比较图 ----')
+    # log.info('---- 绘制股票和指数的比较图 ----')
     # graph.draw_default_compare_plot(stock_df, index_df, '{} week data'.format(stock_code))

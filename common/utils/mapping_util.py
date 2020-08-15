@@ -1,7 +1,12 @@
+from common.utils.logger import Logger
+
+log = Logger(__name__).logger
+
+
 def get_mapping_info(origin_df, mapping_df):
     name_list = []
     industry_list = []
-    print('---- 正在匹配公司数据 ----')
+    log.info('---- 正在匹配公司数据 ----')
     for _, row1 in origin_df.iterrows():
         for _, row2 in mapping_df.iterrows():
             if row1['ts_code'] == row2['ts_code']:
@@ -11,4 +16,3 @@ def get_mapping_info(origin_df, mapping_df):
     origin_df['industry'] = industry_list
 
     return origin_df
-

@@ -1,7 +1,6 @@
 import common.graph.graph_drawer as graph
 from common.quotation.data_filter import Filter
 from common.quotation.data_wrapper import Client
-from common.quotation.data_info import BasicInfo
 import common.quotation.indicator as indicator
 from common.utils import yml_loader as config
 from common.utils import mapping_util
