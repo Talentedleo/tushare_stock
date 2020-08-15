@@ -1,4 +1,5 @@
 import tushare as ts
+from retrying import retry
 
 from common.utils import data_saver as saver
 from common.utils import date_util
@@ -15,6 +16,7 @@ class Filter:
 
         self.last_bus_day = date_util.get_last_bus_day()
 
+    @retry(wait_random_min=1000, wait_random_max=2000)
     def get_all_stocks(self):
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
         stock_list_name = saver.get_csv_data_name('stocks', 'all', end_date=self.last_bus_day)
@@ -28,7 +30,8 @@ class Filter:
                 saver.save_csv(data_list, stock_list_name)
         return data_list
 
-    def get_filtered_stocks(self):
+    @retry(wait_random_min=1000, wait_random_max=2000)
+    def get_filtered_stocks(self, pe=100, total_mv=1500000, turnover_rate=3):
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
         stock_name = saver.get_csv_data_name('stock_info', 'recommended', end_date=self.last_bus_day)
         if saver.check_file_existed(stock_name):
@@ -39,7 +42,9 @@ class Filter:
                                  fields='ts_code,trade_date,turnover_rate,pe,total_mv')
             # ---------------------------------------
             # 自定义过滤条件, pe 静态市盈率, total_mv 总市值, turnover_rate 换手率
-            df = df.drop(df[(df['pe'] > 100) | (df['total_mv'] < 1500000) | (df['turnover_rate'] < 5)].index)
+            df = df.drop(
+                df[(df['pe'] < 0) | (df['pe'] > pe) | (df['total_mv'] < total_mv) | (
+                        df['turnover_rate'] < turnover_rate)].index)
             # ---------------------------------------
             # 删除有空NaN的行
             df = df.dropna(axis=0, how='any')

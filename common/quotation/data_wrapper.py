@@ -1,4 +1,5 @@
 import tushare as ts
+from retrying import retry
 
 from common.utils import data_saver as saver
 from common.utils import date_util
@@ -52,7 +53,9 @@ class Client:
         print("---- 获取指数数据(月) ----")
         return self.get_index_df('month')
 
+    @retry(wait_random_min=1000, wait_random_max=2000)
     def get_stock_df(self, date):
+        # 单个股票的数据
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
         file_name = saver.get_csv_name(date, self.stock_code, self.start_date, self.end_date)
         if saver.check_file_existed(file_name):
@@ -73,7 +76,9 @@ class Client:
                 saver.save_csv(df, file_name)
         return df
 
+    @retry(wait_random_min=1000, wait_random_max=2000)
     def get_index_df(self, date):
+        # 沪深大盘指数
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
         if self.stock_code.endswith('SH'):
             index_code = '000001.SH'
@@ -99,8 +104,9 @@ class Client:
                 saver.save_csv(df, file_name)
         return df
 
+    @retry(wait_random_min=1000, wait_random_max=2000)
     def get_stock_info_df(self):
-        # 通用行情接口
+        # 通用行情接口, 换手率tor，量比vr, 均线
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
         file_name = saver.get_csv_name('stock_info', self.stock_code, self.start_date, self.end_date)
         if saver.check_file_existed(file_name):

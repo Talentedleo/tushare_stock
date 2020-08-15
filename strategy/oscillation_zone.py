@@ -1,9 +1,9 @@
 import pandas as pd
 
 
-def get_fall_down_df(df, field, default_period=5):
+def get_oscillation_zone_df(df, field, default_period=5):
     """
-    下降突破策略
+    区域震荡策略
     """
     # 让数据按升序排列, 清理掉为空的数据
     df = df.dropna(axis=0, how='any')[::-1]
@@ -31,3 +31,4 @@ def get_fall_down_df(df, field, default_period=5):
             period = default_period
         pre = row[field]
     return result_df
+
