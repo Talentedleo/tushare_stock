@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     # sma数据
     # stock_df = indicator.get_sma_df(stock_df)
-    # graph.draw_field_compare_plot(stock_df, 'sma', '{} Stock Market'.format(stock_code), 20)
+    # graph.draw_field_compare_plot(stock_df, 'sma', '{} Stock Market'.format(stock_code), 10)
 
     # 成交量情况
     # graph.draw_default_compare_plot_bar(stock_df, '{} Stock Market'.format(stock_code), 30)

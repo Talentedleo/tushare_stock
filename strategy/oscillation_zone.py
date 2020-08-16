@@ -5,7 +5,7 @@ from common.utils.logger import Logger
 log = Logger(__name__).logger
 
 
-def get_oscillation_zone_df(df, field, default_period=5):
+def get_oscillation_zone_df(df, field, rate=0.0155, default_period=5):
     """
     区域震荡策略
     """
@@ -25,7 +25,7 @@ def get_oscillation_zone_df(df, field, default_period=5):
     for index, row in df.iterrows():
         # 允许小幅度范围内会升
         zone_rate = abs(row[field] - pre) / pre
-        if row[field] < pre or zone_rate < 0.0155:
+        if row[field] < pre or zone_rate < rate:
             period -= 1
             if period == 0:
                 result_df = result_df.append(row, ignore_index=True)

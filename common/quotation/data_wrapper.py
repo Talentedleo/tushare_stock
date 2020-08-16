@@ -58,11 +58,11 @@ class Client:
 
     @retry(wait_random_min=1000, wait_random_max=2000)
     def get_stock_df(self, date):
+        log.info('---- 单支股票数据 ----')
         # 单个股票的数据
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
         file_name = saver.get_csv_name(date, self.stock_code, self.start_date, self.end_date)
         if saver.check_file_existed(file_name):
-            log.info('---- 读取csv数据 ----')
             df = saver.read_from_csv(file_name)
         else:
             if date == 'month':
@@ -74,13 +74,13 @@ class Client:
             else:
                 df = pro.daily(ts_code=self.stock_code, start_date=self.start_date, end_date=self.end_date,
                                fields=self.fields)
-            log.info('---- 保存csv数据 ----')
             if len(df) != 0:
                 saver.save_csv(df, file_name)
         return df
 
     @retry(wait_random_min=1000, wait_random_max=2000)
     def get_index_df(self, date):
+        log.info('---- 沪深指数 ----')
         # 沪深大盘指数
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
         if self.stock_code.endswith('SH'):
@@ -90,7 +90,6 @@ class Client:
 
         file_name = saver.get_csv_name(date, index_code, self.start_date, self.end_date)
         if saver.check_file_existed(file_name):
-            log.info('---- 读取csv数据 ----')
             df = saver.read_from_csv(file_name)
         else:
             if date == 'month':
@@ -102,24 +101,22 @@ class Client:
             else:
                 df = pro.index_daily(ts_code=index_code, start_date=self.start_date, end_date=self.end_date,
                                      fields=self.fields)
-            log.info('---- 保存csv数据 ----')
             if len(df) != 0:
                 saver.save_csv(df, file_name)
         return df
 
     @retry(wait_random_min=1000, wait_random_max=2000)
     def get_stock_info_df(self):
+        log.info('---- 获取股票换手率等通用数据 ----')
         # 通用行情接口, 换手率tor，量比vr, 均线
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
         file_name = saver.get_csv_name('stock_info', self.stock_code, self.start_date, self.end_date)
         if saver.check_file_existed(file_name):
-            log.info('---- 读取csv数据 ----')
             df = saver.read_from_csv(file_name)
         else:
             # 换手率tor，量比vr, 均线
             df = ts.pro_bar(ts_code=self.stock_code, start_date=self.start_date, end_date=self.end_date,
                             factors=['tor', 'vr'], ma=[5, 20, 60])
-            log.info('---- 保存csv数据 ----')
             if len(df) != 0:
                 saver.save_csv(df, file_name)
         return df

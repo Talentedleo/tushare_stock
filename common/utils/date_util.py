@@ -29,4 +29,4 @@ def get_last_bus_day():
 
 
 if __name__ == '__main__':
-    print(get_last_bus_day())
+    print(get_days_ago(5) < get_now_date())

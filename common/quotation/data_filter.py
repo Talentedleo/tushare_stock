@@ -22,9 +22,9 @@ class Filter:
     @retry(wait_random_min=1000, wait_random_max=2000)
     def get_all_stocks(self):
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
+        log.info('---- 获取股票列表数据 ----')
         stock_list_name = saver.get_csv_data_name('stocks', 'all', end_date=self.last_bus_day)
         if saver.check_file_existed(stock_list_name):
-            log.info('---- 读取csv数据 ----')
             data_list = saver.read_from_csv(stock_list_name)
         else:
             data_list = pro.stock_basic(exchange='', list_status='L',
@@ -35,10 +35,10 @@ class Filter:
 
     @retry(wait_random_min=1000, wait_random_max=2000)
     def get_filtered_stocks(self, pe=100, total_mv=1500000, turnover_rate=3):
+        log.info('---- 筛选业绩好的公司 ----')
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
         stock_name = saver.get_csv_data_name('stock_info', 'recommended', end_date=self.last_bus_day)
         if saver.check_file_existed(stock_name):
-            log.info('---- 读取csv数据 ----')
             df = saver.read_from_csv(stock_name)
         else:
             df = pro.daily_basic(ts_code='', trade_date=self.last_bus_day,
