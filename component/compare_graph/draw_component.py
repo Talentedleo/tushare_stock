@@ -25,8 +25,10 @@ if __name__ == '__main__':
     # 周数据
     # stock_df = cli.get_stock_df_weekly()
 
+    #################################################
+
     # atr数据
-    stock_df = indicator.get_atr_df(stock_df)
+    stock_df = indicator.get_atr_df(stock_df, 14)
     graph.draw_field_compare_plot(stock_df, 'atr', '{} Stock Market'.format(stock_code), 10)
 
     # sma数据

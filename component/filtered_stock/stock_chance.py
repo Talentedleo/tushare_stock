@@ -24,7 +24,9 @@ def get_oscillation_stock(field='close', rate=0.0155, days=30, period=5):
     fields = 'ts_code,trade_date,close,high,low,vol,amount'
 
     cli = Filter()
+    # 公司的详细信息
     info_df = cli.get_all_stocks()
+    # 筛选一波好的公司
     df = cli.get_filtered_stocks()
     recommend_list = []
     for company in df['ts_code']:
@@ -34,6 +36,7 @@ def get_oscillation_stock(field='close', rate=0.0155, days=30, period=5):
         # atr数据
         if field == 'atr':
             stock_df = indicator.get_atr_df(stock_df)
+        # 在好的公司里面调用区域震荡策略
         record_df = strategy.get_oscillation_zone_df(stock_df, field, rate, period)
         if record_df is not None:
             if len(record_df.index) > 0:
@@ -56,3 +59,4 @@ def get_oscillation_stock(field='close', rate=0.0155, days=30, period=5):
 
 if __name__ == '__main__':
     first_chance_df = get_oscillation_stock(field='atr')
+    print(first_chance_df)

@@ -1,6 +1,7 @@
 *.pyc
 *.csv
 *.log
+*.db
 
 .idea/
 .idea/vcs.xml
