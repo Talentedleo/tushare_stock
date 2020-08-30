@@ -49,7 +49,7 @@ class Turtle:
     # 最后一个交易日收市价为指定区间内最低价
     @staticmethod
     def check_exit(ts_code, df, threshold=5):
-        log.info('---- 获取退出时机: {} ----'.format(ts_code))
+        log.info('---- 获取减仓时机: {} ----'.format(ts_code))
         if df is None:
             return False
 
@@ -92,6 +92,7 @@ class Turtle:
         positions = position_df['positions']
         cost = position_df['cost']
         current_cap = 0
+        # 计算现在的仓位总价值
         for (position_price, position_size) in positions:
             current_cap += position_size * last_close * 100
 
@@ -122,23 +123,27 @@ class Turtle:
         atr = atr_list.iloc[-1]
         last_close = df.iloc[-1]['close']
         # 头寸规模
-        # todo _balance 应该要减去数据库持仓总数获取, 并保存数据库
         position_size = math.floor(self._balance / 100 / self.real_atr(atr, 100))
-        t_shelve = ShelvePersistence()
-        t_shelve.save_buy(ts_code, last_close, position_size)
+        result = ()
+        # 剩余资金必须大于要买的股票值
+        if self._balance > (position_size * last_close * 100) and position_size > 0:
+            t_shelve = ShelvePersistence()
+            t_shelve.save_buy(ts_code, last_close, position_size)
+            # _balance 盈余资金 = 原来的 - 买了股票的价值
+            self._balance = self._balance - position_size * last_close * 100
 
-        # last_close, position_size, atr
-        result = (
-            "N：{0}\n"
-            "头寸规模：{1}手\n"
-            "买入价格：{2:0.2f}，{3:0.2f}，{4:0.2f}，{5:0.2f}\n"
-            "危险需要退出的价格：{6:0.2f}\n\n"
-                .format(atr, position_size,
-                        last_close,
-                        last_close + atr,
-                        last_close + atr * 2,
-                        last_close + atr * 3,
-                        last_close - atr * 2))
+            # last_close, position_size, atr
+            result = (
+                "N：{0}\n"
+                "头寸规模：{1}手\n"
+                "买入价格：{2:0.2f}，{3:0.2f}，{4:0.2f}，{5:0.2f}\n"
+                "危险需要退出的价格：{6:0.2f}\n\n"
+                    .format(atr, position_size,
+                            last_close,
+                            last_close + atr,
+                            last_close + atr * 2,
+                            last_close + atr * 3,
+                            last_close - atr * 2))
         return result
 
     # 计算减仓, 并保存, 达到减仓时机卖80%, 达到止损时机卖100%
@@ -158,8 +163,28 @@ class Turtle:
         last_close = df.iloc[-1]['close']
         # 保存数据
         t_shelve = ShelvePersistence()
-        t_shelve.save_reduce(ts_code, last_close, position_rate)
-        # todo self._balance 修改值, 保存数据库
+        _, total_price = t_shelve.save_reduce(ts_code, last_close, position_rate)
+        # self._balance 恢复值
+        self._balance = self._balance + total_price
 
         result = ("卖出头寸比例：{0:0.2f}, 卖出价格：{1:0.2f}".format(position_rate, last_close))
         return result
+
+    # 计算现在持仓利润
+    def check_profit(self, ts_code, df):
+        """
+        :param ts_code: 股票代码
+        :param df: 股票数据
+        :return result
+        """
+        log.info('---- 计算并保存卖出的股票数据: {} ----'.format(ts_code))
+        if df is None:
+            return False
+
+        # 按时间升序
+        df = df[::-1]
+        last_close = df.iloc[-1]['close']
+        # 保存数据
+        t_shelve = ShelvePersistence()
+        profit = t_shelve.check_profit(ts_code, last_close)
+        return profit

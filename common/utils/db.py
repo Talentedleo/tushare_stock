@@ -60,7 +60,7 @@ class ShelvePersistence:
             return True
         else:
             positions = old_data['positions']
-            if len(positions) <= 10:
+            if len(positions) <= 1000:
                 positions.append(new_position)
                 cost = old_data['cost'] + new_cost
                 shelve_file[ts_code] = {'ts_code': ts_code, 'positions': positions, 'cost': cost}
@@ -92,38 +92,44 @@ class ShelvePersistence:
         # 先查询原来对应股票持仓
         if old_data is None:
             log.error('没有 %s 股票的持仓信息', ts_code)
-            return True
+            return False, 0
         else:
             # 总成本
             old_cost = old_data['cost']
             # 头寸列表
             positions = old_data['positions']
-            # 计算总共有几手股票
-            total_size = 0
-            for position_tuple in positions:
-                size = position_tuple[1]
-                total_size += size
-            # 卖出的数量不能大于原有的数量
-            if position_rate < 1:
-                position_size = math.ceil(position_rate * total_size)
-                # 剩余头寸 = 现头寸 - 减仓头寸
-                record_size = total_size - position_size
-                # 计算成本单价
-                record_price = old_cost / (total_size * 100)
-                # 成本总价
-                record_total = record_price * record_size * 100
-                # 保存数据库
-                record_position = (last_close, record_size)
-                shelve_file[ts_code] = {'ts_code': ts_code, 'positions': [record_position], 'cost': record_total}
-                shelve_file.close()
-                # 计算利润
-                profit = (last_close - record_price) * position_size
-                log.info('%s 股票被卖出 %d 手, 盈亏: %0.2f', ts_code, position_size, profit)
-                return True
-            elif position_rate == 1:
-                shelve_file[ts_code] = {'ts_code': ts_code, 'positions': [], 'cost': 0}
+            # 有头寸数据的情况
+            if len(positions) > 0:
+                # 计算总共有几手股票
+                total_size = 0
+                for position_tuple in positions:
+                    size = position_tuple[1]
+                    total_size += size
+                # 卖出的数量不能大于原有的数量
+                if position_rate <= 1:
+                    position_size = math.ceil(position_rate * total_size)
+                    # 剩余头寸 = 现头寸 - 减仓头寸
+                    record_size = total_size - position_size
+                    # 计算成本单价
+                    record_price = old_cost / (total_size * 100)
+                    # 成本总价
+                    record_total = record_price * record_size * 100
+                    # 保存数据库
+                    record_position = (last_close, record_size)
+                    if position_rate != 1:
+                        shelve_file[ts_code] = {'ts_code': ts_code, 'positions': [record_position],
+                                                'cost': record_total}
+                    else:
+                        # 全部卖出的情况
+                        shelve_file[ts_code] = {'ts_code': ts_code, 'positions': [], 'cost': 0}
+                    shelve_file.close()
+                    # 计算利润
+                    profit = (last_close - record_price) * position_size * 100
+                    log.info('**注意: %s 股票被 %0.2f 卖出 %d 手, 盈亏: %0.2f', ts_code, last_close, position_size, profit)
+                    return True, last_close * position_size * 100
             else:
-                return False
+                log.info('%s 股票已经清空', ts_code)
+                return False, 0
 
     @staticmethod
     def positions():
@@ -134,3 +140,18 @@ class ShelvePersistence:
                 cost = file[key]['cost']
                 positions = file[key]['positions']
                 log.info('{}, {}, {}'.format(ts_code, cost, positions))
+
+    @staticmethod
+    def check_profit(ts_code, last_close):
+        with shelve.open(base_dir + "/positions") as file:
+            for key in file:
+                code = file[key]['ts_code']
+                if code == ts_code:
+                    positions = file[key]['positions']
+                    total_profit = 0
+                    for item in positions:
+                        price = item[0]
+                        amount = item[1]
+                        total_profit += (last_close - price) * amount * 100
+                    log.info('{}, profit: {}'.format(code, total_profit))
+                    return total_profit
