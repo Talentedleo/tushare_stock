@@ -122,7 +122,7 @@ class Turtle:
         atr = atr_list.iloc[-1]
         last_close = df.iloc[-1]['close']
         # 头寸规模
-        # todo _balance 应该要减去数据库持仓总数获取
+        # todo _balance 应该要减去数据库持仓总数获取, 并保存数据库
         position_size = math.floor(self._balance / 100 / self.real_atr(atr, 100))
         t_shelve = ShelvePersistence()
         t_shelve.save_buy(ts_code, last_close, position_size)
@@ -159,6 +159,7 @@ class Turtle:
         # 保存数据
         t_shelve = ShelvePersistence()
         t_shelve.save_reduce(ts_code, last_close, position_rate)
+        # todo self._balance 修改值, 保存数据库
 
         result = ("卖出头寸比例：{0:0.2f}, 卖出价格：{1:0.2f}".format(position_rate, last_close))
         return result

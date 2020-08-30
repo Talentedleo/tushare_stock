@@ -10,9 +10,11 @@ if __name__ == '__main__':
     # 准备工作
     stock = config.get_value('STOCK')
     stock_code = stock.get('STOCK_CODE')
+    # stock_code = '000725.SZ'
     # stock_code = '601377.SH'
     days = 90
-    fields = stock.get('FIELDS')
+    fields = 'ts_code,trade_date,close,high,low,vol,amount'
+    # fields = stock.get('FIELDS')
     cli = Client(stock_code, days, fields)
     # 日数据
     stock_df = cli.get_stock_df_daily()
@@ -23,7 +25,7 @@ if __name__ == '__main__':
     turtle = Turtle()
 
     # 查询头寸
-    ShelvePersistence.positions()
+    # ShelvePersistence.positions()
 
     # 查询买入时机
     # enter_flag = turtle.check_enter(stock_code, stock_df)
@@ -46,6 +48,6 @@ if __name__ == '__main__':
     # log.info('calc? {}'.format(result))
 
     # 卖出并保存
-    # result = turtle.calc_reduce(stock_code, stock_df)
-    # log.info('sale? {}'.format(result))
+    result = turtle.calc_reduce(stock_code, stock_df)
+    log.info('sale? {}'.format(result))
 

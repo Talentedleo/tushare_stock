@@ -79,9 +79,9 @@ class ShelvePersistence:
     def save_reduce(self, ts_code, last_close, position_rate):
         """
         保存卖出股票
-        :param ts_code:
+        :param ts_code: 股票代码
         :param last_close: 卖出时的价格
-        :param position_size: 卖出的数量(手)
+        :param position_rate: 卖出的比例
         :return:
         """
         old_data = self.load(ts_code)

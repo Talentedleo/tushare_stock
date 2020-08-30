@@ -11,41 +11,57 @@ from common.utils.logger import Logger
 
 log = Logger(__name__).logger
 
+
+class DrawComponent:
+    def __init__(self):
+        # 准备工作
+        self.stock_code = '000725.SZ'
+        # stock_code = '601377.SH'
+        self.days = 120
+        self.fields = 'ts_code,trade_date,close,high,low,vol,amount'
+        self.cli = Client(self.stock_code, self.days, self.fields)
+        # 日数据
+        self.stock_df = self.cli.get_stock_df_daily()
+        # 周数据
+        # self.stock_df = cli.get_stock_df_weekly()
+
+    def get_atr_graph(self):
+        # atr数据
+        self.stock_df = indicator.get_atr_df(self.stock_df, 14)
+        graph.draw_field_compare_plot(self.stock_df, 'atr', '{} Stock Market'.format(self.stock_code), 10)
+
+    def get_sma_graph(self):
+        # sma数据
+        self.stock_df = indicator.get_sma_df(self.stock_df)
+        graph.draw_field_compare_plot(self.stock_df, 'sma', '{} Stock Market'.format(self.stock_code), 10)
+
+    def get_amount_graph(self):
+        # 成交量情况
+        graph.draw_default_compare_plot_bar(self.stock_df, '{} Stock Market'.format(self.stock_code), 30)
+
+    def get_turnover_graph(self):
+        # 换手率
+        self.stock_df = self.cli.get_stock_info_df()
+        graph.draw_field_compare_plot_bar(self.stock_df, 'turnover_rate', '{} Stock Market'.format(self.stock_code), 2)
+
+    def get_index_compare_graph(self):
+        # 和大盘走势比较
+        # 日指数
+        index_df = self.cli.get_index_df_daily()
+        # 周指数
+        # index_df = cli.get_index_df_weekly()
+        log.info('---- 绘制股票和指数的比较图 ----')
+        graph.draw_default_compare_plot(self.stock_df, index_df, '{} week data'.format(self.stock_code))
+
+
 if __name__ == '__main__':
-    stock = config.get_value('STOCK')
-    stock_code = stock.get('STOCK_CODE')
-    # stock_code = '601377.SH'
-    # days = stock.get('DAYS_INTERVAL')
-    days = 120
-    fields = stock.get('FIELDS')
-
-    cli = Client(stock_code, days, fields)
-    # 日数据
-    stock_df = cli.get_stock_df_daily()
-    # 周数据
-    # stock_df = cli.get_stock_df_weekly()
-
+    drawer = DrawComponent()
+    drawer.get_atr_graph()
     #################################################
-
-    # atr数据
-    stock_df = indicator.get_atr_df(stock_df, 14)
-    graph.draw_field_compare_plot(stock_df, 'atr', '{} Stock Market'.format(stock_code), 10)
-
-    # sma数据
-    # stock_df = indicator.get_sma_df(stock_df)
-    # graph.draw_field_compare_plot(stock_df, 'sma', '{} Stock Market'.format(stock_code), 10)
-
-    # 成交量情况
-    # graph.draw_default_compare_plot_bar(stock_df, '{} Stock Market'.format(stock_code), 30)
-
-    # 换手率
-    # stock_df = cli.get_stock_info_df()
-    # graph.draw_field_compare_plot_bar(stock_df, 'turnover_rate', '{} Stock Market'.format(stock_code), 2)
-
-    # 和大盘走势比较
-    # 日指数
-    # index_df = cli.get_index_df_daily()
-    # 周指数
-    # index_df = cli.get_index_df_weekly()
-    # log.info('---- 绘制股票和指数的比较图 ----')
-    # graph.draw_default_compare_plot(stock_df, index_df, '{} week data'.format(stock_code))
+    # drawer.get_sma_graph()
+    #################################################
+    # drawer.get_amount_graph()
+    #################################################
+    # drawer.get_turnover_graph()
+    #################################################
+    # drawer.get_index_compare_graph()
