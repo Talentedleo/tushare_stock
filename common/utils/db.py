@@ -142,16 +142,21 @@ class ShelvePersistence:
                 log.info('{}, {}, {}'.format(ts_code, cost, positions))
 
     @staticmethod
-    def check_profit(ts_code, last_close):
+    def check_cost(ts_code, last_close):
+        """
+        检查持仓相对现在行情的市值
+        :param ts_code:
+        :param last_close:
+        :return:
+        """
         with shelve.open(base_dir + "/positions") as file:
             for key in file:
                 code = file[key]['ts_code']
                 if code == ts_code:
                     positions = file[key]['positions']
-                    total_profit = 0
+                    total_cost = 0
                     for item in positions:
-                        price = item[0]
                         amount = item[1]
-                        total_profit += (last_close - price) * amount * 100
-                    log.info('{}, profit: {}'.format(code, total_profit))
-                    return total_profit
+                        total_cost += last_close * amount * 100
+                    log.info('{}, profit: {}'.format(code, total_cost))
+                    return total_cost

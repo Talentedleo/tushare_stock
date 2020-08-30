@@ -170,8 +170,8 @@ class Turtle:
         result = ("卖出头寸比例：{0:0.2f}, 卖出价格：{1:0.2f}".format(position_rate, last_close))
         return result
 
-    # 计算现在持仓利润
-    def check_profit(self, ts_code, df):
+    # 计算现在持仓市值
+    def check_cost(self, ts_code, df):
         """
         :param ts_code: 股票代码
         :param df: 股票数据
@@ -180,11 +180,11 @@ class Turtle:
         log.info('---- 计算并保存卖出的股票数据: {} ----'.format(ts_code))
         if df is None:
             return False
-
         # 按时间升序
         df = df[::-1]
+        # todo 下降的股票这里报错, 检查一下
         last_close = df.iloc[-1]['close']
         # 保存数据
         t_shelve = ShelvePersistence()
-        profit = t_shelve.check_profit(ts_code, last_close)
-        return profit
+        total_cost = t_shelve.check_cost(ts_code, last_close)
+        return total_cost
