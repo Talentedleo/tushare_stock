@@ -12,7 +12,7 @@ log = Logger(__name__).logger
 
 def get_oscillation_stock(field='close', rate=0.0155, days=30, period=5):
     """
-    获取推荐股票振荡区间的df
+    获取推荐股票振荡区间的df, 只适合熊市中找机会
     :param rate: 波动率
     :param field: 用来计算的指标
     :param days: 总时间区间
@@ -57,6 +57,24 @@ def get_oscillation_stock(field='close', rate=0.0155, days=30, period=5):
     return unique_df
 
 
+# 展示所有业绩好的公司
+def get_good_company_list():
+    cli = Filter()
+    # 公司的详细信息
+    info_df = cli.get_all_stocks()
+    # 筛选一波好的公司
+    record_df = cli.get_filtered_stocks()
+    # 匹配公司信息
+    record_df = mapping_util.get_mapping_info(record_df, info_df)
+    # 显示所有列
+    # pd.set_option('display.max_columns', None)
+    # 显示所有行
+    pd.set_option('display.max_rows', None)
+    # 设置value的显示长度为100，默认为50
+    pd.set_option('max_colwidth', 1000)
+    log.info(record_df)
+
+
 if __name__ == '__main__':
-    first_chance_df = get_oscillation_stock(field='atr')
-    print(first_chance_df)
+    # first_chance_df = get_oscillation_stock(field='atr')
+    get_good_company_list()

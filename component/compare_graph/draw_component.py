@@ -13,11 +13,11 @@ log = Logger(__name__).logger
 
 
 class DrawComponent:
-    def __init__(self):
+    def __init__(self, stock_code, day):
         # 准备工作
-        self.stock_code = '000725.SZ'
+        self.stock_code = stock_code
         # stock_code = '601377.SH'
-        self.days = 120
+        self.days = day
         self.fields = 'ts_code,trade_date,close,high,low,vol,amount'
         self.cli = Client(self.stock_code, self.days, self.fields)
         # 日数据
@@ -55,7 +55,7 @@ class DrawComponent:
 
 
 if __name__ == '__main__':
-    drawer = DrawComponent()
+    drawer = DrawComponent('000725.SZ', 120)
     drawer.get_atr_graph()
     #################################################
     # drawer.get_sma_graph()

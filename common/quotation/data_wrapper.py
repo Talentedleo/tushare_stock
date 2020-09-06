@@ -76,6 +76,8 @@ class Client:
                                fields=self.fields)
             if len(df) != 0:
                 saver.save_csv(df, file_name)
+            else:
+                raise Exception('No stock data exception!')
         return df
 
     @retry(wait_random_min=1000, wait_random_max=2000)
@@ -103,6 +105,8 @@ class Client:
                                      fields=self.fields)
             if len(df) != 0:
                 saver.save_csv(df, file_name)
+            else:
+                raise Exception('No index data exception!')
         return df
 
     @retry(wait_random_min=1000, wait_random_max=2000)
@@ -119,4 +123,6 @@ class Client:
                             factors=['tor', 'vr'], ma=[5, 20, 60])
             if len(df) != 0:
                 saver.save_csv(df, file_name)
+            else:
+                raise Exception('No stock info exception!')
         return df

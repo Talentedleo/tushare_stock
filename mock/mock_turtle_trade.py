@@ -1,3 +1,5 @@
+import os
+
 from common.quotation.data_wrapper import Client
 from common.utils.db import ShelvePersistence
 from common.utils.logger import Logger
@@ -66,16 +68,19 @@ class TurtleWorkFlow:
         return cost
 
 
-if __name__ == '__main__':
-    # 兴业证券 '601377.SH'
-    # 京东方A '000725.SZ'
-    # 格力 '000651.SZ'
-    # 广发证券 '000776.SZ'
-    # 科大讯飞 '002230.SZ'
-    # 永辉超市 '601933.SZ'
-    balance = 100000
-    wf = TurtleWorkFlow('601988.SZ', 365, balance)
-    day = 90
+def start_invest(stock_code, total_data_day, day_before, balance, enter_threshold, exit_threshold, result_list):
+    """
+    启动投资的主方法
+    :param stock_code: 股票代码
+    :param total_data_day: 总时间段内
+    :param day_before: n天前的数据
+    :param balance: 账户总额
+    :param enter_threshold: n天突破就买入
+    :param exit_threshold: n天贬值就卖出
+    :return:
+    """
+    wf = TurtleWorkFlow(stock_code, total_data_day, balance)
+    day = day_before
     exit_time = 0
     stop_time = 0
     total_profit = 0
@@ -83,12 +88,13 @@ if __name__ == '__main__':
     for i in reversed(range(day)):
         log.info('%d 天前的数据', i + 1)
         df = wf.get_earlier_df(i + 1)
-        if wf.check_enter(df):
+        # 买入股票
+        if wf.check_enter(df, enter_threshold):
             wf.save_buy(df)
         # 减仓
-        if wf.check_exit(df, 10):
+        if wf.check_exit(df, exit_threshold):
             if exit_time == 0:
-                wf.save_sell(df)
+                wf.save_sell(df, 0.5)
                 exit_time += 1
             elif exit_time == 1:
                 # 全部清空
@@ -97,7 +103,7 @@ if __name__ == '__main__':
         # 止损
         if wf.check_stop(df):
             if stop_time == 0:
-                wf.save_sell(df)
+                wf.save_sell(df, 0.5)
                 stop_time += 1
             elif stop_time == 1:
                 # 全部清空
@@ -107,6 +113,39 @@ if __name__ == '__main__':
     # 当前账户持股市值
     now_cost = wf.check_cost(wf.stock_df)
     # 总的账户利润
-    wallet = wf.turtle.balance + now_cost - balance
+    if now_cost is not None:
+        total_profit = wf.turtle.balance + now_cost - balance
     log.info('账户: {0:0.2f}'.format(wf.turtle.balance))
-    print('战果: {0:0.2f}'.format(wallet))
+    result_item = '{0} 战果: {1:0.2f}'.format(stock_code, total_profit)
+    result_list.append(result_item)
+
+
+def remove_positions_db():
+    # 删除头寸db, 这里想测试多支股票的实际投资效果, 所以每次临时删除, 实际操作时不需要删除的, 保持账户用来查询
+    project_path = os.path.split(os.path.abspath(os.path.realpath(__file__)))[0] + '/../'
+    db_path = os.path.abspath(project_path + '/storage/positions.db')
+    if os.path.exists(db_path):
+        os.remove(db_path)
+    else:
+        log.info("---- The file does not exist ----")
+
+
+if __name__ == '__main__':
+    # 京东方A '000725.SZ'
+    # 比亚迪 '002594.SZ'
+    # 美的集团 '000333.SZ'
+    # 山东黄金 '600547.SH'
+    # 兴业证券 '601377.SH'
+    # 复星医药 '600194.SH'
+    # 新宁物流 '300013.SZ'
+    stock_list = ['000725.SZ', '002594.SZ', '000333.SZ', '600547.SH', '601377.SH', '300013.SZ']
+    result_list = []
+    # 将多支股票放入策略中运算测试
+    for code_item in stock_list:
+        remove_positions_db()
+        # todo 修改买入和卖出 threshold
+        start_invest(code_item, 1460, 730, 100000, 15, 10, result_list)
+    log.info('*' * 50)
+    # 打印总盈亏结果
+    for stock_item in result_list:
+        log.info(stock_item)

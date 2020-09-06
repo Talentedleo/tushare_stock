@@ -182,7 +182,6 @@ class Turtle:
             return False
         # 按时间升序
         df = df[::-1]
-        # todo 下降的股票这里报错, 检查一下
         last_close = df.iloc[-1]['close']
         # 保存数据
         t_shelve = ShelvePersistence()

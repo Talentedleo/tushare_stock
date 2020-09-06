@@ -8,6 +8,8 @@ log = Logger(__name__).logger
 def get_oscillation_zone_df(df, field, rate=0.0155, default_period=5):
     """
     区域震荡策略
+    适合熊市中找低位徘徊的价值股
+    不适合牛市!!
     一定周期内下降, 或者在一定比略范围内小幅度上升都会被保存
     """
     # 让数据按升序排列, 清理掉为空的数据
