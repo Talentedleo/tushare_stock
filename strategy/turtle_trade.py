@@ -7,6 +7,7 @@ from common.utils.logger import Logger
 log = Logger(__name__).logger
 
 
+# 使用场景: 慢牛, 牛市, 大盘走势走势好的情况
 class Turtle:
     def __init__(self, balance=100000):
         log.info('---- 调用海龟投资策略 ----')

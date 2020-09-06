@@ -8,6 +8,7 @@ from strategy.turtle_trade import Turtle
 log = Logger(__name__).logger
 
 
+# 使用场景: 慢牛, 牛市, 大盘走势走势好的情况
 class TurtleWorkFlow:
     def __init__(self, stock_code='000725.SZ', days=365, balance=100000):
         # 准备工作
@@ -132,19 +133,20 @@ def remove_positions_db():
 
 if __name__ == '__main__':
     # 京东方A '000725.SZ'
+    # TCL科技 '000100.SZ'
     # 比亚迪 '002594.SZ'
     # 美的集团 '000333.SZ'
     # 山东黄金 '600547.SH'
     # 兴业证券 '601377.SH'
     # 复星医药 '600194.SH'
-    # 新宁物流 '300013.SZ'
-    stock_list = ['000725.SZ', '002594.SZ', '000333.SZ', '600547.SH', '601377.SH', '300013.SZ']
+    # 福耀玻璃 '600660.SH'
+    stock_list = ['000725.SZ', '002594.SZ', '000333.SZ', '601377.SH', '000100.SZ', '600660.SH']
     result_list = []
     # 将多支股票放入策略中运算测试
     for code_item in stock_list:
         remove_positions_db()
-        # todo 修改买入和卖出 threshold
-        start_invest(code_item, 1460, 730, 100000, 15, 10, result_list)
+        # todo 使用场景: 大盘趋势好, 使用基本都赚. 修改买入和卖出 threshold
+        start_invest(code_item, 365, 180, 100000, 15, 10, result_list)
     log.info('*' * 50)
     # 打印总盈亏结果
     for stock_item in result_list:
