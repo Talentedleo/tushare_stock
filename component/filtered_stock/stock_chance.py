@@ -76,10 +76,10 @@ def get_good_company_list():
 
 
 # 沪深股通十大成交股
-def get_top10_company():
+def get_top10_company(trade_date=None):
     cli = Filter()
     # 公司的详细信息
-    info_df = cli.get_top10_stocks()
+    info_df = cli.get_top10_stocks(trade_date)
     # 显示所有列
     pd.set_option('display.max_columns', None)
     # 显示所有行
@@ -89,17 +89,29 @@ def get_top10_company():
     log.info(info_df)
 
 
-def get_money_flow_stocks():
+# 找出资金流入前20的公司
+def get_money_flow_stocks(head_num=20, trade_date=None):
     cli = Filter()
     # 公司的详细信息
-    info_df = cli.get_money_flow_stocks()
-    # 显示所有列
-    pd.set_option('display.max_columns', None)
-    # 显示所有行
-    pd.set_option('display.max_rows', None)
-    # 设置value的显示长度为100，默认为50
-    pd.set_option('max_colwidth', 1000)
-    log.info(info_df)
+    info_df = cli.get_all_stocks()
+    # 资金流数据
+    money_flow_df = cli.get_money_flow_stocks(trade_date)
+    # 按净流入额倒排序, net_mf_amount
+    money_flow_df.sort_values(by='net_mf_amount', ascending=False, inplace=True)
+    # 提取前面的数据
+    head_df = money_flow_df.head(n=head_num)
+    # 匹配公司信息
+    head_df = mapping_util.get_mapping_info(head_df, info_df)
+
+    # 打印数据
+    log.info('TS代码 公司 产业 日期 大单 特大单 净流入额')
+    for _, item in head_df.iterrows():
+        log.info(
+            '{} {} {} {} {} {} {}万元'.format(item['ts_code'], item['name'], item['industry'], item['trade_date'],
+                                            item['buy_lg_amount'], item['buy_elg_amount'], item['net_mf_amount']))
+    return head_df
+
+# todo 拿到个股的历史资金流数据, 绘图分析
 
 
 if __name__ == '__main__':
@@ -112,5 +124,5 @@ if __name__ == '__main__':
     # 沪深股通十大成交股
     # get_top10_company()
 
-    # 个股资金流向
-    get_money_flow_stocks()
+    # 排名前面的个股资金流向
+    get_money_flow_stocks(20)
