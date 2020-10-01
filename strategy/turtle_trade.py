@@ -47,6 +47,25 @@ class Turtle:
 
         return False
 
+    # 突破区间高位就可以买入
+    @staticmethod
+    def get_enter_price(ts_code, df, threshold=20):
+        log.info('---- 获取入市时机: {} ----'.format(ts_code))
+        if df is None:
+            return False
+
+        # 按时间升序
+        df = df[::-1]
+        max_price = 0
+        df = df.tail(n=threshold)
+        if len(df) < threshold:
+            return False
+        for index, row in df.iterrows():
+            if row['close'] > max_price:
+                max_price = float(row['close'])
+
+        return max_price
+
     # 最后一个交易日收市价为指定区间内最低价
     @staticmethod
     def check_exit(ts_code, df, threshold=5):

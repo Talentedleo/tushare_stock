@@ -37,6 +37,12 @@ class TurtleWorkFlow:
         log.info('enter? {}'.format(enter_flag))
         return enter_flag
 
+    def get_enter_price(self, ts_df, threshold=20):
+        # 查询买入时机
+        enter_price = self.turtle.get_enter_price(self.stock_code, ts_df, threshold)
+        log.info('enter price: {}'.format(enter_price))
+        return enter_price
+
     def check_stop(self, ts_df):
         # 查询止损时机
         with ShelvePersistence.open() as file:
@@ -132,7 +138,7 @@ def remove_positions_db():
         log.info("---- The file does not exist ----")
 
 
-if __name__ == '__main__':
+def get_multi_stock_profit():
     # 京东方A '000725.SZ'
     # TCL科技 '000100.SZ'
     # 比亚迪 '002594.SZ'
@@ -150,15 +156,59 @@ if __name__ == '__main__':
     # 永辉超市 '601933.SH'
     # 中国外运 '601598.SH'
     # 西藏珠峰 '600338.SH'
-    stock_list = ['000725.SZ', '000100.SZ', '002594.SZ', '000333.SZ', '002460.SZ', '002230.SZ', '002415.SZ', '002572.SZ',
+    stock_list = ['000725.SZ', '000100.SZ', '002594.SZ', '000333.SZ', '002460.SZ', '002230.SZ', '002415.SZ',
+                  '002572.SZ',
                   '601377.SH', '600660.SH', '601933.SH', '601598.SH', '600338.SH']
     result_list = []
     # 将多支股票放入策略中运算测试
     for code_item in stock_list:
         remove_positions_db()
         # todo 使用场景: 大盘趋势好, 使用基本都赚. 修改买入和卖出 threshold
-        start_invest(code_item, 365, 180, 100000, 15, 10, result_list)
+        # 区间突破就买入, 亏损超10%就止损
+        start_invest(code_item, 120, 90, 100000, 15, 10, result_list)
     log.info('*' * 50)
     # 打印总盈亏结果
     for stock_item in result_list:
         log.info(stock_item)
+
+
+def get_multi_stock_enter_price(total_data_day=90, balance=100000, enter_threshold=15):
+    # 京东方A '000725.SZ'
+    # TCL科技 '000100.SZ'
+    # 比亚迪 '002594.SZ'
+    # 美的集团 '000333.SZ'
+    # 赣锋锂业 '002460.SZ'
+    # 格力电器 '000651.SZ'
+    # 科大讯飞 '002230.SZ'
+    # 海康威视 '002415.SZ'
+    # 索菲亚 '002572.SZ'
+    # 漫步者 '002351.SZ'
+    # 山东黄金 '600547.SH'
+    # 兴业证券 '601377.SH'
+    # 复星医药 '600194.SH'
+    # 福耀玻璃 '600660.SH'
+    # 永辉超市 '601933.SH'
+    # 中国外运 '601598.SH'
+    # 西藏珠峰 '600338.SH'
+    stock_list = ['000725.SZ', '000100.SZ', '002594.SZ', '000333.SZ', '002460.SZ', '002230.SZ', '002415.SZ',
+                  '002572.SZ',
+                  '601377.SH', '600660.SH', '601933.SH', '601598.SH', '600338.SH']
+    result_list = []
+    # 将多支股票放入策略中运算测试
+    for code_item in stock_list:
+        # 区间突破就买入, 亏损超10%就止损
+        wf = TurtleWorkFlow(code_item, total_data_day, balance)
+        enter_price = wf.get_enter_price(wf.stock_df, enter_threshold)
+        result_item = '{0} 突破价格: {1:0.2f}'.format(code_item, enter_price)
+        result_list.append(result_item)
+    log.info('*' * 50)
+    # 打印总盈亏结果
+    for stock_item in result_list:
+        log.info(stock_item)
+
+
+if __name__ == '__main__':
+    # 多支股票的近段时间盈利情况
+    # get_multi_stock_profit()
+    # 多支股票明天的买入预期价位
+    get_multi_stock_enter_price()

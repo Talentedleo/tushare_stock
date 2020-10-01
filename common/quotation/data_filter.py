@@ -1,10 +1,11 @@
+import pandas as pd
 import tushare as ts
 from retrying import retry
 
 from common.utils import data_saver as saver
 from common.utils import date_util
-from common.utils.logger import Logger
 from common.utils import yml_loader as config
+from common.utils.logger import Logger
 
 log = Logger(__name__).logger
 
@@ -51,6 +52,42 @@ class Filter:
             # ---------------------------------------
             # 删除有空NaN的行
             df = df.dropna(axis=0, how='any')
+
+            if len(df) != 0:
+                saver.save_csv(df, stock_name)
+        return df
+
+    # 沪深股通十大成交股
+    @retry(wait_random_min=1000, wait_random_max=2000)
+    def get_top10_stocks(self):
+        log.info('---- 沪深股通十大成交股 ----')
+        # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
+        stock_name = saver.get_csv_data_name('stock_info', 'top10', end_date=self.last_bus_day)
+        if saver.check_file_existed(stock_name):
+            df = saver.read_from_csv(stock_name)
+        else:
+            sh_df = pro.hsgt_top10(trade_date=self.last_bus_day, market_type='1',
+                                   fields='ts_code,trade_date,name,close,amount,net_amount')
+            sz_df = pro.hsgt_top10(trade_date=self.last_bus_day, market_type='3',
+                                   fields='ts_code,trade_date,name,close,amount,net_amount')
+            frames = [sh_df, sz_df]
+            df = pd.concat(frames)
+
+            if len(df) != 0:
+                saver.save_csv(df, stock_name)
+        return df
+
+    # 个股资金流向
+    # 获取单日全部股票数据
+    @retry(wait_random_min=1000, wait_random_max=2000)
+    def get_money_flow_stocks(self, trade_date):
+        log.info('---- 个股资金流向 ----')
+        # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
+        stock_name = saver.get_csv_data_name('stock_info', 'money_flow', end_date=self.last_bus_day)
+        if saver.check_file_existed(stock_name):
+            df = saver.read_from_csv(stock_name)
+        else:
+            df = pro.moneyflow(trade_date='20200930')
 
             if len(df) != 0:
                 saver.save_csv(df, stock_name)

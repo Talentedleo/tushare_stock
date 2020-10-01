@@ -55,7 +55,8 @@ class DrawComponent:
 
 
 if __name__ == '__main__':
-    drawer = DrawComponent('000725.SZ', 120)
+    # drawer = DrawComponent('000725.SZ', 120)
+    drawer = DrawComponent('002594.SZ', 120)
     drawer.get_atr_graph()
     #################################################
     # drawer.get_sma_graph()

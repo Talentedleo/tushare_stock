@@ -75,6 +75,42 @@ def get_good_company_list():
     log.info(record_df)
 
 
+# 沪深股通十大成交股
+def get_top10_company():
+    cli = Filter()
+    # 公司的详细信息
+    info_df = cli.get_top10_stocks()
+    # 显示所有列
+    pd.set_option('display.max_columns', None)
+    # 显示所有行
+    pd.set_option('display.max_rows', None)
+    # 设置value的显示长度为100，默认为50
+    pd.set_option('max_colwidth', 1000)
+    log.info(info_df)
+
+
+def get_money_flow_stocks():
+    cli = Filter()
+    # 公司的详细信息
+    info_df = cli.get_money_flow_stocks()
+    # 显示所有列
+    pd.set_option('display.max_columns', None)
+    # 显示所有行
+    pd.set_option('display.max_rows', None)
+    # 设置value的显示长度为100，默认为50
+    pd.set_option('max_colwidth', 1000)
+    log.info(info_df)
+
+
 if __name__ == '__main__':
+    # 找出一段时间内振荡或者下降的股票
     # first_chance_df = get_oscillation_stock(field='atr')
-    get_good_company_list()
+
+    # 找出好公司列表
+    # get_good_company_list()
+
+    # 沪深股通十大成交股
+    # get_top10_company()
+
+    # 个股资金流向
+    get_money_flow_stocks()
