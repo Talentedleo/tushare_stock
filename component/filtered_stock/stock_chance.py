@@ -6,6 +6,8 @@ import common.quotation.indicator as indicator
 from common.utils.logger import Logger
 from common.utils import mapping_util
 from strategy import oscillation_zone as strategy
+from component.compare_graph.draw_component import DrawComponent
+import time
 
 log = Logger(__name__).logger
 
@@ -87,6 +89,7 @@ def get_top10_company(trade_date=None):
     # 设置value的显示长度为100，默认为50
     pd.set_option('max_colwidth', 1000)
     log.info(info_df)
+    return info_df
 
 
 # 找出资金流入前20的公司
@@ -111,7 +114,50 @@ def get_money_flow_stocks(head_num=20, trade_date=None):
                                             item['buy_lg_amount'], item['buy_elg_amount'], item['net_mf_amount']))
     return head_df
 
-# todo 拿到个股的历史资金流数据, 绘图分析
+
+# 绘制特定股票列表的资金流图
+def draw_stocks_money_flow_graph(stock_list_df):
+    for company in stock_list_df['ts_code']:
+        drawer = DrawComponent(company, 120)
+        drawer.get_money_flow_graph(5)
+        # drawer.get_atr_graph(5)
+
+
+# 拿到个股的历史资金流数据, 持续净流入的就有机会
+def get_capital_inflow_stock_list(df_days=120, days_interval=10, target_amount=0):
+    """
+    计算一段时间内资金流入和流出情况, 判断主力是否还在
+    :param df_days: df的数据量
+    :param days_interval: 计算资金流动的区间
+    :param target_amount: 累加资金目标值(单位: 万元)
+    :return: 筛选后的公司列表1
+    """
+    fields = 'ts_code,trade_date,close,high,low,vol,amount'
+
+    fil = Filter()
+    # 公司的详细信息
+    info_df = fil.get_all_stocks()
+    show_list = []
+    company_list = []
+    for _, df_row in info_df.iterrows():
+        # 接口限制: 每分钟最多访问该接口300次
+        # time.sleep(0.25)
+        company = df_row['ts_code']
+        name = df_row['name']
+        industry = df_row['industry']
+        cli = Client(company, df_days, fields)
+        stock_df = cli.get_money_flow_stock()
+        target_flag = Filter.is_capital_inflow_stock(stock_df, days_interval, target_amount)
+        if target_flag:
+            show_list.append(company + ' ' + name + ' ' + industry)
+            company_list.append(company)
+
+    log.info('---- Companies with capital inflows of more than {} (ten thousand yuan) within {} days: ----'.format(
+        days_interval, target_amount))
+    log.info('---- recommended size: {} ----'.format(len(company_list)))
+    for company_info in show_list:
+        log.info('---- {} ----'.format(company_info))
+    return company_list
 
 
 if __name__ == '__main__':
@@ -122,7 +168,14 @@ if __name__ == '__main__':
     # get_good_company_list()
 
     # 沪深股通十大成交股
-    # get_top10_company()
+    # stocks_df = get_top10_company('20200930')
+    # 绘制各股票一定时间段内资金流向图
+    # draw_stocks_money_flow_graph(stocks_df)
 
     # 排名前面的个股资金流向
-    get_money_flow_stocks(20)
+    # stocks_df = get_money_flow_stocks(20, '20200930')
+    # 绘制各股票一定时间段内资金流向图
+    # draw_stocks_money_flow_graph(stocks_df)
+
+    # 根据资金流获取有机会的公司 单位: 万元
+    get_capital_inflow_stock_list(60, 20, 100000)

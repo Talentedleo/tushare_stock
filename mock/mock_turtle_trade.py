@@ -4,6 +4,7 @@ from common.quotation.data_wrapper import Client
 from common.utils.db import ShelvePersistence
 from common.utils.logger import Logger
 from strategy.turtle_trade import Turtle
+from component.filtered_stock.stock_chance import get_capital_inflow_stock_list
 
 log = Logger(__name__).logger
 
@@ -138,40 +139,6 @@ def remove_positions_db():
         log.info("---- The file does not exist ----")
 
 
-def get_multi_stock_profit():
-    # 京东方A '000725.SZ'
-    # TCL科技 '000100.SZ'
-    # 比亚迪 '002594.SZ'
-    # 美的集团 '000333.SZ'
-    # 赣锋锂业 '002460.SZ'
-    # 格力电器 '000651.SZ'
-    # 科大讯飞 '002230.SZ'
-    # 海康威视 '002415.SZ'
-    # 索菲亚 '002572.SZ'
-    # 漫步者 '002351.SZ'
-    # 山东黄金 '600547.SH'
-    # 兴业证券 '601377.SH'
-    # 复星医药 '600194.SH'
-    # 福耀玻璃 '600660.SH'
-    # 永辉超市 '601933.SH'
-    # 中国外运 '601598.SH'
-    # 西藏珠峰 '600338.SH'
-    stock_list = ['000725.SZ', '000100.SZ', '002594.SZ', '000333.SZ', '002460.SZ', '002230.SZ', '002415.SZ',
-                  '002572.SZ',
-                  '601377.SH', '600660.SH', '601933.SH', '601598.SH', '600338.SH']
-    result_list = []
-    # 将多支股票放入策略中运算测试
-    for code_item in stock_list:
-        remove_positions_db()
-        # todo 使用场景: 大盘趋势好, 使用基本都赚. 修改买入和卖出 threshold
-        # 区间突破就买入, 亏损超10%就止损
-        start_invest(code_item, 120, 90, 100000, 15, 10, result_list)
-    log.info('*' * 50)
-    # 打印总盈亏结果
-    for stock_item in result_list:
-        log.info(stock_item)
-
-
 def get_multi_stock_enter_price(total_data_day=90, balance=100000, enter_threshold=15):
     # 京东方A '000725.SZ'
     # TCL科技 '000100.SZ'
@@ -192,7 +159,7 @@ def get_multi_stock_enter_price(total_data_day=90, balance=100000, enter_thresho
     # 西藏珠峰 '600338.SH'
     stock_list = ['000725.SZ', '000100.SZ', '002594.SZ', '000333.SZ', '002460.SZ', '002230.SZ', '002415.SZ',
                   '002572.SZ',
-                  '601377.SH', '600660.SH', '601933.SH', '601598.SH', '600338.SH']
+                  '601377.SH', '600660.SH', '601933.SH', '601598.SH', '600338.SH', '000858.SZ']
     result_list = []
     # 将多支股票放入策略中运算测试
     for code_item in stock_list:
@@ -207,8 +174,39 @@ def get_multi_stock_enter_price(total_data_day=90, balance=100000, enter_thresho
         log.info(stock_item)
 
 
+def get_multi_stock_profit(stock_list=[]):
+    if not stock_list:
+        # 京东方A '000725.SZ'
+        # TCL科技 '000100.SZ'
+        # 比亚迪 '002594.SZ'
+        # 美的集团 '000333.SZ'
+        # 赣锋锂业 '002460.SZ'
+        # 科大讯飞 '002230.SZ'
+        # 海康威视 '002415.SZ'
+        # 福耀玻璃 '600660.SH'
+        # 长城汽车 '601633.SH'
+        stock_list = ['000725.SZ', '000100.SZ', '002594.SZ', '000333.SZ', '002460.SZ', '002230.SZ', '002415.SZ',
+                      '600660.SH', '601633.SH']
+    result_list = []
+    # 将多支股票放入策略中运算测试
+    for code_item in stock_list:
+        remove_positions_db()
+        # todo 使用场景: 大盘趋势好, 使用基本都赚. 修改买入和卖出 threshold
+        # 区间突破就买入, 亏损超10%就止损
+        start_invest(code_item, 120, 90, 100000, 15, 10, result_list)
+    log.info('*' * 50)
+    # 打印总盈亏结果
+    for stock_item in result_list:
+        log.info(stock_item)
+
+
 if __name__ == '__main__':
-    # 多支股票的近段时间盈利情况
-    # get_multi_stock_profit()
+    # 筛选后资金流入的多支股票 进行海龟投资策略
+    # money_flow_filtered_list = get_capital_inflow_stock_list(60, 20, 70000)
+    # get_multi_stock_profit(money_flow_filtered_list)
+
+    # 默认的股票 进行海龟投资策略
+    get_multi_stock_profit()
+
     # 多支股票明天的买入预期价位
-    get_multi_stock_enter_price()
+    # get_multi_stock_enter_price()

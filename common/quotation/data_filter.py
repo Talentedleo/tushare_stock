@@ -98,4 +98,25 @@ class Filter:
                 saver.save_csv(df, stock_name)
         return df
 
-    # todo 获取单个股票历史资金流向
+    # 判断股票资金持续流入的股票
+    @staticmethod
+    def is_capital_inflow_stock(money_flow_df, threshold, target_amount):
+        log.info('---- 判断该段时间内资金是否持续流入 ----')
+        if money_flow_df is None:
+            log.info('---- data is empty ----')
+            return False
+
+        # 按时间升序
+        money_flow_df = money_flow_df[::-1]
+        df = money_flow_df.tail(n=threshold)
+        if len(df) < threshold:
+            return False
+        # 计算该段时间内资金流入情况
+        total_amount = 0
+        for index, row in df.iterrows():
+            total_amount += row['net_mf_amount']
+        # 指定流入数量大于某个数才加入候选
+        if total_amount >= target_amount:
+            return True
+
+        return False

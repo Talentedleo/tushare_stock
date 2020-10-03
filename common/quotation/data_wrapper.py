@@ -126,3 +126,18 @@ class Client:
             else:
                 raise Exception('No stock info exception!')
         return df
+
+    # 获取单个股票历史资金流向
+    @retry(wait_random_min=1000, wait_random_max=2000, stop_max_attempt_number=3)
+    def get_money_flow_stock(self):
+        log.info('---- 个股资金流向: {} ----'.format(self.stock_code))
+        # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
+        file_name = saver.get_csv_name('stock_info', 'money_flow_' + self.stock_code, self.start_date, self.end_date)
+        if saver.check_file_existed(file_name):
+            df = saver.read_from_csv(file_name)
+        else:
+            df = pro.moneyflow(ts_code=self.stock_code, start_date=self.start_date, end_date=self.end_date,
+                               fields='ts_code,trade_date,net_mf_vol,net_mf_amount,buy_lg_amount,buy_elg_amount')
+            if len(df) != 0:
+                saver.save_csv(df, file_name)
+        return df
