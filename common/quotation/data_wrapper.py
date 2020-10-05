@@ -10,8 +10,15 @@ log = Logger(__name__).logger
 
 
 class Client:
-
-    def __init__(self, stock_code, days_interval, fields):
+    def __init__(self, stock_code, days_interval, fields, start_date=None, end_date=None):
+        """
+        days_interval 和 start_date, end_date 任选一个来填
+        :param stock_code:
+        :param days_interval:
+        :param fields:
+        :param start_date:
+        :param end_date:
+        """
         global pro
 
         # 设置token
@@ -19,9 +26,14 @@ class Client:
         pro = ts.pro_api()
 
         self.stock_code = stock_code
-        self.end_date = date_util.get_now_date()
-        self.start_date = date_util.get_days_ago(days_interval)
         self.fields = fields
+        # 如果开始和结束日期不给值, 默认取前n天的
+        if start_date is None or end_date is None:
+            self.start_date = date_util.get_days_ago(days_interval)
+            self.end_date = date_util.get_now_date()
+        else:
+            self.start_date = start_date
+            self.end_date = end_date
 
     def get_stock_df_daily(self):
         # 单个股票日数据
@@ -56,7 +68,7 @@ class Client:
         log.info("---- 获取指数数据(月) ----")
         return self.get_index_df('month')
 
-    @retry(wait_random_min=1000, wait_random_max=2000)
+    @retry(wait_random_min=1000, wait_random_max=2000, stop_max_attempt_number=3)
     def get_stock_df(self, date):
         log.info('---- 单支股票数据 ----')
         # 单个股票的数据
@@ -129,7 +141,7 @@ class Client:
 
     # 获取单个股票历史资金流向
     @retry(wait_random_min=1000, wait_random_max=2000, stop_max_attempt_number=3)
-    def get_money_flow_stock(self):
+    def get_money_flow_df(self):
         log.info('---- 个股资金流向: {} ----'.format(self.stock_code))
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
         file_name = saver.get_csv_name('stock_info', 'money_flow_' + self.stock_code, self.start_date, self.end_date)
@@ -138,6 +150,19 @@ class Client:
         else:
             df = pro.moneyflow(ts_code=self.stock_code, start_date=self.start_date, end_date=self.end_date,
                                fields='ts_code,trade_date,net_mf_vol,net_mf_amount,buy_lg_amount,buy_elg_amount')
+            if len(df) != 0:
+                saver.save_csv(df, file_name)
+        return df
+
+    # 分红送股数据
+    @retry(wait_random_min=1000, wait_random_max=2000)
+    def get_dividend_df(self):
+        log.info('---- 分红送股数据: {} ----'.format(self.stock_code))
+        file_name = saver.get_csv_data_name('stock_info', 'dividend_' + self.stock_code, self.end_date)
+        if saver.check_file_existed(file_name):
+            df = saver.read_from_csv(file_name)
+        else:
+            df = pro.dividend(ts_code=self.stock_code, fields='ts_code,div_proc,stk_div,record_date,ex_date,pay_date')
             if len(df) != 0:
                 saver.save_csv(df, file_name)
         return df

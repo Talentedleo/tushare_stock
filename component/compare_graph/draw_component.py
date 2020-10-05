@@ -47,7 +47,7 @@ class DrawComponent:
 
     def get_money_flow_graph(self, step=10):
         # 每日收盘价 和 个股资金流向
-        money_flow_df = self.cli.get_money_flow_stock()
+        money_flow_df = self.cli.get_money_flow_df()
         money_flow_df['close'] = self.stock_df['close']
         graph.draw_field_compare_plot_bar(money_flow_df, 'net_mf_amount', '{} Stock Market'.format(self.stock_code),
                                           step)
@@ -69,14 +69,16 @@ if __name__ == '__main__':
     # 美的集团 '000333.SZ'
     # 赣锋锂业 '002460.SZ'
 
-    # drawer = DrawComponent('000725.SZ', 120)
+    # drawer = DrawComponent('000725.SZ', 30)
     # drawer = DrawComponent('002647.SZ', 120)
     # drawer = DrawComponent('002594.SZ', 120)
     # drawer = DrawComponent('601012.SH', 120)
-    drawer = DrawComponent('002027.SZ', 120)
-    drawer.get_atr_graph(5)
+    # drawer = DrawComponent('002027.SZ', 120)
+    # drawer = DrawComponent('002460.SZ', 30)
+    drawer = DrawComponent('002415.SZ', 60)
+    drawer.get_atr_graph(2)
     #################################################
-    drawer.get_money_flow_graph(5)
+    drawer.get_money_flow_graph(2)
     #################################################
     # drawer.get_turnover_graph(5)
     #################################################
