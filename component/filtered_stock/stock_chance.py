@@ -63,12 +63,12 @@ def get_oscillation_stock(field='close', rate=0.0155, days=30, period=5):
 
 
 # 展示所有业绩好的公司
-def get_good_company_list():
+def get_good_company_list(pe=100, total_mv=1500000, turnover_rate=3):
     cli = Filter()
     # 公司的详细信息
     info_df = cli.get_all_stocks()
     # 筛选一波好的公司
-    record_df = cli.get_filtered_stocks()
+    record_df = cli.get_filtered_stocks(pe, total_mv, turnover_rate)
     # 匹配公司信息
     record_df = mapping_util.get_mapping_info(record_df, info_df)
     # 显示所有列
@@ -222,16 +222,16 @@ if __name__ == '__main__':
     # get_dividend_statistics(20200101, 1, 10)
 
     # 分红送股
-    get_dividend_info()
+    # get_dividend_info()
 
-    # 多天数据 根据资金流获取有机会的公司 单位: 万元. 5天内持续流入超2亿的股票
-    # comp_list = get_capital_inflow_stock_list(60, 5, 20000)
+    # # [多天数据] 根据资金流获取有机会的公司 单位: 万元. 5天内持续流入超2亿的股票
+    comp_list = get_capital_inflow_stock_list(60, 5, 20000)
     # new_df = pd.DataFrame()
     # new_df['ts_code'] = comp_list
     # # 绘图
     # draw_stocks_money_flow_graph(new_df, 60, 5)
 
-    # 一天数据 排名前面的个股资金流向
+    # [一天数据] 排名前面的个股资金流向
     # stocks_df = get_money_flow_stocks(20, '20200930')
     # 绘制各股票一定时间段内资金流向图
     # draw_stocks_money_flow_graph(stocks_df)
@@ -240,9 +240,10 @@ if __name__ == '__main__':
     # first_chance_df = get_oscillation_stock(field='atr')
 
     # 找出好公司列表
+    # get_good_company_list(65, 2000000, 2)
     # get_good_company_list()
 
-    # 沪深股通十大成交股
+    # # 沪深股通十大成交股
     # stocks_df = get_top10_company('20200930')
-    # 绘制各股票一定时间段内资金流向图
+    # # 绘制各股票一定时间段内资金流向图
     # draw_stocks_money_flow_graph(stocks_df)

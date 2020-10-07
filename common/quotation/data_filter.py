@@ -101,6 +101,7 @@ class Filter:
     # 判断股票资金持续流入的股票
     @staticmethod
     def is_capital_inflow_stock(money_flow_df, threshold, target_amount):
+        # todo target_amount 应该和市值作比较, 占市值的%
         log.info('---- 判断该段时间内资金是否持续流入 ----')
         if money_flow_df is None:
             log.info('---- data is empty ----')

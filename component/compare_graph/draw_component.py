@@ -30,14 +30,14 @@ class DrawComponent:
         self.stock_df = indicator.get_atr_df(self.stock_df, 14)
         graph.draw_field_compare_plot(self.stock_df, 'atr', '{} Stock Market'.format(self.stock_code), step)
 
-    def get_sma_graph(self):
+    def get_sma_graph(self, step=10):
         # sma数据
         self.stock_df = indicator.get_sma_df(self.stock_df)
-        graph.draw_field_compare_plot(self.stock_df, 'sma', '{} Stock Market'.format(self.stock_code), 10)
+        graph.draw_field_compare_plot(self.stock_df, 'sma', '{} Stock Market'.format(self.stock_code), step)
 
-    def get_amount_graph(self):
+    def get_amount_graph(self, step=30):
         # 成交量情况
-        graph.draw_default_compare_plot_bar(self.stock_df, '{} Stock Market'.format(self.stock_code), 30)
+        graph.draw_default_compare_plot_bar(self.stock_df, '{} Stock Market'.format(self.stock_code), step)
 
     def get_turnover_graph(self, step=10):
         # 换手率
@@ -68,22 +68,25 @@ if __name__ == '__main__':
     # 比亚迪 '002594.SZ'
     # 美的集团 '000333.SZ'
     # 赣锋锂业 '002460.SZ'
+    # 东山精密 '002384.SZ'
+    # 隆基股份 '601012.SH'
+    # 分众传媒 '002027.SZ'
 
-    # drawer = DrawComponent('000725.SZ', 30)
-    # drawer = DrawComponent('002647.SZ', 120)
+    # drawer = DrawComponent('000725.SZ', 120)
+    # drawer = DrawComponent('002647.SZ', 1 20)
     # drawer = DrawComponent('002594.SZ', 120)
     # drawer = DrawComponent('601012.SH', 120)
     # drawer = DrawComponent('002027.SZ', 120)
-    # drawer = DrawComponent('002460.SZ', 30)
-    drawer = DrawComponent('002415.SZ', 60)
-    drawer.get_atr_graph(2)
+    # drawer = DrawComponent('002460.SZ', 120)
+    drawer = DrawComponent('002384.SZ', 120)
+    drawer.get_atr_graph(5)
     #################################################
-    drawer.get_money_flow_graph(2)
+    drawer.get_money_flow_graph(5)
     #################################################
-    # drawer.get_turnover_graph(5)
+    drawer.get_turnover_graph(5)
     #################################################
-    # drawer.get_sma_graph()
+    drawer.get_sma_graph()
     #################################################
-    # drawer.get_amount_graph()
+    drawer.get_amount_graph()
     #################################################
-    # drawer.get_index_compare_graph()
+    drawer.get_index_compare_graph()

@@ -149,7 +149,7 @@ class Turtle:
         if self._balance > (position_size * last_close * 100) and position_size > 0:
             t_shelve = ShelvePersistence()
             t_shelve.save_buy(ts_code, last_close, position_size)
-            # _balance 盈余资金 = 原来的 - 买了股票的价值
+            # _balance 剩余资金 = 原来的 - 买了股票的价值
             self._balance = self._balance - position_size * last_close * 100
 
             # last_close, position_size, atr

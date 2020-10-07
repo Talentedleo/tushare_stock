@@ -28,5 +28,18 @@ def get_last_bus_day():
     return last_bus_day.strftime(DATE_FORMATTER)
 
 
+# 获取季度数据 start_q='2018Q1', end_q='2019Q3'
+def get_quarter_date():
+    today = date.today()
+    quarter = (today.month - 1) // 3 + 1
+    return '{}Q{}'.format(today.year, quarter)
+
+
+def get_quarter_date_ago(days=30):
+    before_day = datetime.now() - timedelta(days=days)
+    quarter = (before_day.month - 1) // 3 + 1
+    return '{}Q{}'.format(before_day.year, quarter)
+
+
 if __name__ == '__main__':
-    print(get_days_ago(5) < get_now_date())
+    get_quarter_date_ago()

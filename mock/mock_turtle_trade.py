@@ -194,6 +194,7 @@ def get_multi_stock_profit(stock_list=[]):
         # todo 使用场景: 大盘趋势好, 使用基本都赚. 修改买入和卖出 threshold
         # 区间突破就买入, 亏损超10%就止损
         start_invest(code_item, 120, 90, 100000, 15, 10, result_list)
+        # start_invest(code_item, 1850, 1825, 100000, 15, 10, result_list)
     log.info('*' * 50)
     # 打印总盈亏结果
     for stock_item in result_list:
