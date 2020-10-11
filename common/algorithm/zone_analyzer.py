@@ -2,7 +2,7 @@ from common.quotation.data_wrapper import Client
 import numpy as np
 
 
-# 分红送股, 判断区间内数据是否上升
+# 判断指定股票, 指定日期附近, 区间内数据是否上升
 def check_new_high(ts_code, record_date, before_day, after_day):
     fields = 'ts_code,trade_date,close,high,low,vol,amount'
     record_date = int(record_date)

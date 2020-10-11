@@ -201,13 +201,20 @@ def get_multi_stock_profit(stock_list=[]):
         log.info(stock_item)
 
 
+# 筛选后资金流入的多支股票 进行海龟投资策略
+def check_capital_inflow_stock_profit(df_days=120, days_interval=10, target_amount=0):
+    money_flow_filtered_list = get_capital_inflow_stock_list(df_days, days_interval, target_amount)
+    get_multi_stock_profit(money_flow_filtered_list)
+
+
 if __name__ == '__main__':
+    # todo 总结 筛选后的股票进行海龟交易回测利润
+
     # 筛选后资金流入的多支股票 进行海龟投资策略
-    # money_flow_filtered_list = get_capital_inflow_stock_list(60, 20, 70000)
-    # get_multi_stock_profit(money_flow_filtered_list)
+    check_capital_inflow_stock_profit(60, 20, 70000)
 
     # 默认的股票 进行海龟投资策略
-    get_multi_stock_profit()
+    # get_multi_stock_profit()
 
     # 多支股票明天的买入预期价位
     # get_multi_stock_enter_price()

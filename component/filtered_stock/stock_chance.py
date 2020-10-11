@@ -1,16 +1,18 @@
+import math
+
 import pandas as pd
 
+import common.quotation.indicator as indicator
+from common.algorithm.data_statistics import find_most_popular_stock
 from common.algorithm.zone_analyzer import check_new_high
 from common.quotation.data_filter import Filter
 from common.quotation.data_wrapper import Client
-import common.quotation.indicator as indicator
-from common.utils.logger import Logger
-from common.utils import mapping_util
 from common.utils import date_util as date
-from strategy import oscillation_zone as strategy
+from common.utils import mapping_util
+from common.utils.logger import Logger
 from component.compare_graph.draw_component import DrawComponent
+from strategy import oscillation_zone as strategy
 import time
-import math
 
 log = Logger(__name__).logger
 
@@ -217,24 +219,52 @@ def get_dividend_statistics(day=int(date.get_now_date()), before_day=2, after_da
     log.info('fall percent: {}%'.format((fall_count / total_count) * 100))
 
 
+# [多天数据] 根据资金流获取有机会的公司 单位: 万元.
+def draw_multi_company_capital_inflow_graph(df_days=120, days_interval=10, target_amount=0, graph_length=120, step=5):
+    comp_list = get_capital_inflow_stock_list(df_days, days_interval, target_amount)
+    new_df = pd.DataFrame()
+    new_df['ts_code'] = comp_list
+    # 绘图
+    draw_stocks_money_flow_graph(new_df, graph_length, step)
+
+
+# [一天数据] 排名前面的个股资金流向
+def draw_one_day_capital_inflow_graph(top_num=20):
+    stocks_df = get_money_flow_stocks(top_num)
+    # 绘制各股票一定时间段内资金流向图
+    draw_stocks_money_flow_graph(stocks_df)
+
+
+# 沪深股通十大成交股
+def draw_sh_sz_top_graph():
+    stocks_df = get_top10_company()
+    # 绘制各股票一定时间段内资金流向图
+    draw_stocks_money_flow_graph(stocks_df)
+
+
+# 历史沪深股通十大成交股统计, 热门的股票
+def find_sh_sz_popular_stocks(day_before=10, end_date=date.get_now_date(), top_num=10):
+    # 取前10的数据
+    find_most_popular_stock(get_top10_company, day_before, end_date, top_num)
+
+
 if __name__ == '__main__':
+    # todo 总结 数据选股
+
+    # 历史沪深股通十大成交股统计, 热门的股票, 这里是20天内的数据统计, 取最后结果的前10数据
+    find_sh_sz_popular_stocks(20, date.get_now_date(), 10)
+
     # 结论: 分红后跌多涨少! 统计分红后升跌
     # get_dividend_statistics(20200101, 1, 10)
 
     # 分红送股
     # get_dividend_info()
 
-    # # [多天数据] 根据资金流获取有机会的公司 单位: 万元. 5天内持续流入超2亿的股票
-    comp_list = get_capital_inflow_stock_list(60, 5, 20000)
-    # new_df = pd.DataFrame()
-    # new_df['ts_code'] = comp_list
-    # # 绘图
-    # draw_stocks_money_flow_graph(new_df, 60, 5)
+    # [多天数据] 根据资金流获取有机会的公司 单位: 万元. 5天内持续流入超2亿的股票
+    # draw_multi_company_capital_inflow_graph(60, 5, 20000, 60, 5)
 
     # [一天数据] 排名前面的个股资金流向
-    # stocks_df = get_money_flow_stocks(20, '20200930')
-    # 绘制各股票一定时间段内资金流向图
-    # draw_stocks_money_flow_graph(stocks_df)
+    # draw_one_day_capital_inflow_graph(20)
 
     # 找出一段时间内振荡或者下降的股票
     # first_chance_df = get_oscillation_stock(field='atr')
@@ -243,7 +273,5 @@ if __name__ == '__main__':
     # get_good_company_list(65, 2000000, 2)
     # get_good_company_list()
 
-    # # 沪深股通十大成交股
-    # stocks_df = get_top10_company('20200930')
-    # # 绘制各股票一定时间段内资金流向图
-    # draw_stocks_money_flow_graph(stocks_df)
+    # 沪深股通十大成交股
+    # draw_sh_sz_top_graph()

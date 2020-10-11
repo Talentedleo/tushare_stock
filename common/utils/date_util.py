@@ -35,10 +35,18 @@ def get_quarter_date():
     return '{}Q{}'.format(today.year, quarter)
 
 
+# n天前的季度
 def get_quarter_date_ago(days=30):
     before_day = datetime.now() - timedelta(days=days)
     quarter = (before_day.month - 1) // 3 + 1
     return '{}Q{}'.format(before_day.year, quarter)
+
+
+# 字符串日期获取n天前的日期字符串
+def transform_str_date_ago(date_str, days):
+    date_time = datetime.strptime(date_str, DATE_FORMATTER)
+    days_ago = date_time - timedelta(days=days)
+    return time.strftime(DATE_FORMATTER, days_ago.timetuple())
 
 
 if __name__ == '__main__':

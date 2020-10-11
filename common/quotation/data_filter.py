@@ -58,16 +58,16 @@ class Filter:
         return df
 
     # 沪深股通十大成交股
-    @retry(wait_random_min=1000, wait_random_max=2000)
+    @retry(wait_random_min=1000, wait_random_max=2000, stop_max_attempt_number=3)
     def get_top10_stocks(self, trade_date=None):
         log.info('---- 沪深股通十大成交股 ----')
+        if trade_date is None:
+            trade_date = self.last_bus_day
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
-        stock_name = saver.get_csv_data_name('stock_info', 'top10', end_date=self.last_bus_day)
+        stock_name = saver.get_csv_data_name('stock_info', 'top10', end_date=trade_date)
         if saver.check_file_existed(stock_name):
             df = saver.read_from_csv(stock_name)
         else:
-            if trade_date is None:
-                trade_date = self.last_bus_day
             sh_df = pro.hsgt_top10(trade_date=trade_date, market_type='1',
                                    fields='ts_code,trade_date,name,close,amount,net_amount')
             sz_df = pro.hsgt_top10(trade_date=trade_date, market_type='3',
@@ -101,7 +101,7 @@ class Filter:
     # 判断股票资金持续流入的股票
     @staticmethod
     def is_capital_inflow_stock(money_flow_df, threshold, target_amount):
-        # todo target_amount 应该和市值作比较, 占市值的%
+        # todo target_amount 应该和市值作比较, 占市值的%, 单纯看流入资金量意义不大!!
         log.info('---- 判断该段时间内资金是否持续流入 ----')
         if money_flow_df is None:
             log.info('---- data is empty ----')

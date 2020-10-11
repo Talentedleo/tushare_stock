@@ -9,7 +9,6 @@ from common.utils.logger import Logger
 log = Logger(__name__).logger
 
 
-# todo 拿不到数据
 class Domestic_Economy:
     def __init__(self):
         global pro
@@ -36,6 +35,8 @@ class Domestic_Economy:
 
 
 if __name__ == '__main__':
+    # todo 总结 查看宏观经济情况
+
     cli = Domestic_Economy()
-    gdp_df = cli.get_gdp_df()
+    gdp_df = cli.get_gdp_df(start_q=date_util.get_quarter_date_ago(730))
     print(gdp_df)
