@@ -135,7 +135,7 @@ def get_capital_inflow_stock_list(df_days=120, days_interval=10, target_amount=0
     :param df_days: df的数据量
     :param days_interval: 计算资金流动的区间
     :param target_amount: 累加资金目标值(单位: 万元)
-    :return: 筛选后的公司列表1
+    :return: 筛选后的公司列表
     """
     fields = 'ts_code,trade_date,close,high,low,vol,amount'
 
@@ -152,13 +152,58 @@ def get_capital_inflow_stock_list(df_days=120, days_interval=10, target_amount=0
         industry = df_row['industry']
         cli = Client(company, df_days, fields)
         stock_df = cli.get_money_flow_df()
+        # 筛选流入资金是否超过指定的值
         target_flag = Filter.is_capital_inflow_stock(stock_df, days_interval, target_amount)
         if target_flag:
             show_list.append(company + ' ' + name + ' ' + industry)
             company_list.append(company)
 
     log.info('---- Companies with capital inflows of more than {} (ten thousand yuan) within {} days: ----'.format(
-        days_interval, target_amount))
+        target_amount, days_interval))
+    log.info('---- recommended size: {} ----'.format(len(company_list)))
+    for company_info in show_list:
+        log.info('---- {} ----'.format(company_info))
+    return company_list
+
+
+# 拿到个股的历史资金流数据, 持续净流入超过市值一定比率就是有机会
+def get_capital_inflow_stock_percent_list(df_days=120, days_interval=10, target_percent=0.1):
+    """
+    计算一段时间内资金流入和流出情况, 判断主力是否还在
+    :param df_days: df的数据量
+    :param days_interval: 计算资金流动的区间
+    :param target_percent: 资金流入占市值比例目标值
+    :return: 筛选后的公司列表
+    """
+    fields = 'ts_code,trade_date,close,high,low,vol,amount'
+
+    fil = Filter()
+    # 公司的详细信息
+    info_df = fil.get_all_stocks()
+    # 所有公司市值数据
+    total_mv_df = fil.get_total_mv_df()
+    show_list = []
+    company_list = []
+    for _, df_row in info_df.iterrows():
+        # 接口限制: 每分钟最多访问该接口300次
+        # time.sleep(0.25)
+        company = df_row['ts_code']
+        name = df_row['name']
+        industry = df_row['industry']
+        cli = Client(company, df_days, fields)
+        stock_df = cli.get_money_flow_df()
+        # 获取指定公司当前的市值
+        tmp_df = total_mv_df.loc[total_mv_df['ts_code'] == company]
+        if not tmp_df.empty:
+            total_mv = tmp_df['total_mv'].iloc[0]
+            # 计算近段时间资金流入超过市值比例
+            target_flag = Filter.is_capital_inflow_percent_stock(stock_df, total_mv, days_interval, target_percent)
+            if target_flag:
+                show_list.append(company + ' ' + name + ' ' + industry)
+                company_list.append(company)
+
+    log.info('---- Companies with ratio of capital flow to market value more than {}% within {} days: ----'.format(
+        target_percent * 100, days_interval))
     log.info('---- recommended size: {} ----'.format(len(company_list)))
     for company_info in show_list:
         log.info('---- {} ----'.format(company_info))
@@ -219,9 +264,28 @@ def get_dividend_statistics(day=int(date.get_now_date()), before_day=2, after_da
     log.info('fall percent: {}%'.format((fall_count / total_count) * 100))
 
 
-# [多天数据] 根据资金流获取有机会的公司 单位: 万元.
-def draw_multi_company_capital_inflow_graph(df_days=120, days_interval=10, target_amount=0, graph_length=120, step=5):
+# [多天数据] 根据资金流获取有机会的公司 单位: 万元. 单纯比较总资金流入量
+def draw_multi_company_capital_inflow_amount_graph(df_days=120, days_interval=10, target_amount=0, graph_length=120,
+                                                   step=5):
     comp_list = get_capital_inflow_stock_list(df_days, days_interval, target_amount)
+    new_df = pd.DataFrame()
+    new_df['ts_code'] = comp_list
+    # 绘图
+    draw_stocks_money_flow_graph(new_df, graph_length, step)
+
+
+# [多天数据] 根据资金流获取有机会的公司. 比较占总市值百分比
+def draw_multi_company_capital_inflow_percent_graph(df_days=120, days_interval=10, target_percent=0.1, graph_length=120,
+                                                    step=5):
+    """
+    :param df_days: 数据的时间长度
+    :param days_interval: 比较的时间段
+    :param target_percent: 目标百分比
+    :param graph_length: 绘图的x轴数据长度
+    :param step: 步长
+    :return:
+    """
+    comp_list = get_capital_inflow_stock_percent_list(df_days, days_interval, target_percent)
     new_df = pd.DataFrame()
     new_df['ts_code'] = comp_list
     # 绘图
@@ -250,9 +314,11 @@ def find_sh_sz_popular_stocks(day_before=10, end_date=date.get_now_date(), top_n
 
 if __name__ == '__main__':
     # todo 总结 数据选股
+    # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 资金流入超过市值一定比率.
+    draw_multi_company_capital_inflow_percent_graph(60, 5, 0.05, 60, 5)
 
     # 历史沪深股通十大成交股统计, 热门的股票, 这里是20天内的数据统计, 取最后结果的前10数据
-    find_sh_sz_popular_stocks(20, date.get_now_date(), 10)
+    # find_sh_sz_popular_stocks(20, date.get_now_date(), 10)
 
     # 结论: 分红后跌多涨少! 统计分红后升跌
     # get_dividend_statistics(20200101, 1, 10)
@@ -260,8 +326,8 @@ if __name__ == '__main__':
     # 分红送股
     # get_dividend_info()
 
-    # [多天数据] 根据资金流获取有机会的公司 单位: 万元. 5天内持续流入超2亿的股票
-    # draw_multi_company_capital_inflow_graph(60, 5, 20000, 60, 5)
+    # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 单纯比较总资金流入量. 5天内持续流入超2亿的股票
+    # draw_multi_company_capital_inflow_amount_graph(60, 5, 20000, 60, 5)
 
     # [一天数据] 排名前面的个股资金流向
     # draw_one_day_capital_inflow_graph(20)

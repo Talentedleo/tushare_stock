@@ -3,8 +3,8 @@ from retrying import retry
 
 from common.utils import data_saver as saver
 from common.utils import date_util
-from common.utils.logger import Logger
 from common.utils import yml_loader as config
+from common.utils.logger import Logger
 
 log = Logger(__name__).logger
 

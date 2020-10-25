@@ -34,6 +34,20 @@ class Filter:
                 saver.save_csv(data_list, stock_list_name)
         return data_list
 
+    # 获取市值数据
+    @retry(wait_random_min=1000, wait_random_max=2000)
+    def get_total_mv_df(self):
+        log.info('---- 获取所有市值数据 ----')
+        file_name = saver.get_csv_data_name('stock_info', 'total_mv', end_date=date_util.get_last_bus_day())
+        if saver.check_file_existed(file_name):
+            df = saver.read_from_csv(file_name)
+        else:
+            df = pro.daily_basic(ts_code='', trade_date=date_util.get_last_bus_day(),
+                                 fields='ts_code,trade_date,turnover_rate,pe,total_mv')
+            if len(df) != 0:
+                saver.save_csv(df, file_name)
+        return df
+
     @retry(wait_random_min=1000, wait_random_max=2000)
     def get_filtered_stocks(self, pe=100, total_mv=1500000, turnover_rate=3):
         log.info('---- 筛选业绩好的公司 ----')
@@ -101,7 +115,6 @@ class Filter:
     # 判断股票资金持续流入的股票
     @staticmethod
     def is_capital_inflow_stock(money_flow_df, threshold, target_amount):
-        # todo target_amount 应该和市值作比较, 占市值的%, 单纯看流入资金量意义不大!!
         log.info('---- 判断该段时间内资金是否持续流入 ----')
         if money_flow_df is None:
             log.info('---- data is empty ----')
@@ -118,6 +131,38 @@ class Filter:
             total_amount += row['net_mf_amount']
         # 指定流入数量大于某个数才加入候选
         if total_amount >= target_amount:
+            return True
+
+        return False
+
+    # 判断股票资金持续流入超过市值一定比例的股票
+    @staticmethod
+    def is_capital_inflow_percent_stock(money_flow_df, total_mv, threshold, target_percent):
+        """
+        判断股票资金持续流入是否超过市值一定比例
+        :param money_flow_df: 资金流的df
+        :param total_mv: 公司最近一天的总市值
+        :param threshold: 时间段
+        :param target_percent: 目标的百分比
+        :return: bool值
+        """
+        # 计算一段时间内资金量流入占市值的%
+        log.info('---- 判断该段时间内资金流入占市值比例 ----')
+        if money_flow_df is None:
+            log.info('---- data is empty ----')
+            return False
+
+        # 按时间升序
+        money_flow_df = money_flow_df[::-1]
+        df = money_flow_df.tail(n=threshold)
+        if len(df) < threshold:
+            return False
+        # 计算该段时间内资金流入情况
+        total_amount = 0
+        for index, row in df.iterrows():
+            total_amount += row['net_mf_amount']
+        # 资金流入总量 / 总市值 >= 指定百分比
+        if total_amount / total_mv >= target_percent:
             return True
 
         return False
