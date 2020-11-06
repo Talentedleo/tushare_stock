@@ -121,9 +121,9 @@ class Client:
                 raise Exception('No index data exception!')
         return df
 
-    @retry(wait_random_min=1000, wait_random_max=2000)
+    @retry(wait_random_min=1000, wait_random_max=2000, stop_max_attempt_number=3)
     def get_stock_info_df(self):
-        log.info('---- 获取股票换手率等通用数据 ----')
+        log.info('---- 获取股票换手率等通用数据: {} ----'.format(self.stock_code))
         # 通用行情接口, 换手率tor，量比vr, 均线
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
         file_name = saver.get_csv_name('stock_info', self.stock_code, self.start_date, self.end_date)
@@ -136,7 +136,7 @@ class Client:
             if len(df) != 0:
                 saver.save_csv(df, file_name)
             else:
-                raise Exception('No stock info exception!')
+                log.error('No stock info exception!')
         return df
 
     # 获取单个股票历史资金流向

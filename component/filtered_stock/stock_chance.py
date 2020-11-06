@@ -4,6 +4,7 @@ import pandas as pd
 
 import common.quotation.indicator as indicator
 from common.algorithm.data_statistics import find_most_popular_stock
+import common.algorithm.turnover_analyzer as turnover_analyzer
 from common.algorithm.zone_analyzer import check_new_high
 from common.quotation.data_filter import Filter
 from common.quotation.data_wrapper import Client
@@ -12,6 +13,7 @@ from common.utils import mapping_util
 from common.utils.logger import Logger
 from component.compare_graph.draw_component import DrawComponent
 from strategy import oscillation_zone as strategy
+import common.utils.tool as tool
 import time
 
 log = Logger(__name__).logger
@@ -73,12 +75,8 @@ def get_good_company_list(pe=100, total_mv=1500000, turnover_rate=3):
     record_df = cli.get_filtered_stocks(pe, total_mv, turnover_rate)
     # 匹配公司信息
     record_df = mapping_util.get_mapping_info(record_df, info_df)
-    # 显示所有列
-    # pd.set_option('display.max_columns', None)
-    # 显示所有行
-    pd.set_option('display.max_rows', None)
-    # 设置value的显示长度为100，默认为50
-    pd.set_option('max_colwidth', 1000)
+    # 显示所有
+    tool.show_all_df()
     log.info(record_df)
 
 
@@ -88,11 +86,7 @@ def get_top10_company(trade_date=None):
     # 公司的详细信息
     info_df = cli.get_top10_stocks(trade_date)
     # 显示所有列
-    pd.set_option('display.max_columns', None)
-    # 显示所有行
-    pd.set_option('display.max_rows', None)
-    # 设置value的显示长度为100，默认为50
-    pd.set_option('max_colwidth', 1000)
+    tool.show_all_df()
     log.info(info_df)
     return info_df
 
@@ -186,7 +180,7 @@ def get_capital_inflow_stock_percent_list(df_days=120, days_interval=10, target_
     company_list = []
     for _, df_row in info_df.iterrows():
         # 接口限制: 每分钟最多访问该接口300次
-        # time.sleep(0.25)
+        time.sleep(0.25)
         company = df_row['ts_code']
         name = df_row['name']
         industry = df_row['industry']
@@ -312,10 +306,37 @@ def find_sh_sz_popular_stocks(day_before=10, end_date=date.get_now_date(), top_n
     find_most_popular_stock(get_top10_company, day_before, end_date, top_num)
 
 
+# 分析高转手率有机会的股票
+def find_turnover_stocks(choice='high', data_period=20, slope=0, graph_length=30, step=5):
+    fil = Filter()
+    if choice is 'high':
+        # 优质公司
+        stocks_df = fil.get_filtered_stocks()
+    else:
+        # 所有公司
+        stocks_df = fil.get_all_stocks()
+    stock_list = stocks_df['ts_code'].tolist()
+    # 符合条件的绘图, 斜率越高, 换手率越高, 股票越活跃
+    result_list, slope_list = turnover_analyzer.analyse_turnover_stocks(stock_list, data_period, slope)
+    for stock in result_list:
+        # 绘图
+        drawer = DrawComponent(stock, graph_length)
+        drawer.get_turnover_graph(step)
+    # 打印
+    for stock_info in slope_list:
+        log.info(stock_info)
+
+
 if __name__ == '__main__':
     # todo 总结 数据选股
+
+    # 搜索高转手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
+    find_turnover_stocks('high', 5, 1, 20, 2)
+
+    # todo 搜索资金流持续流入的股票, 寻找机会
+
     # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 资金流入超过市值一定比率.
-    draw_multi_company_capital_inflow_percent_graph(60, 5, 0.05, 60, 5)
+    # draw_multi_company_capital_inflow_percent_graph(60, 5, 0.015, 60, 5)
 
     # 历史沪深股通十大成交股统计, 热门的股票, 这里是20天内的数据统计, 取最后结果的前10数据
     # find_sh_sz_popular_stocks(20, date.get_now_date(), 10)

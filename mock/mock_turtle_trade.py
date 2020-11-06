@@ -177,6 +177,8 @@ def get_multi_stock_enter_price(total_data_day=90, balance=100000, enter_thresho
 def get_multi_stock_profit(stock_list=[]):
     if not stock_list:
         # 京东方A '000725.SZ'
+        # 东山精密 '002384.SZ'
+        # 长城汽车 '601633.SH'
         # TCL科技 '000100.SZ'
         # 比亚迪 '002594.SZ'
         # 美的集团 '000333.SZ'
@@ -185,8 +187,8 @@ def get_multi_stock_profit(stock_list=[]):
         # 海康威视 '002415.SZ'
         # 福耀玻璃 '600660.SH'
         # 长城汽车 '601633.SH'
-        stock_list = ['000725.SZ', '000100.SZ', '002594.SZ', '000333.SZ', '002460.SZ', '002230.SZ', '002415.SZ',
-                      '600660.SH', '601633.SH']
+        stock_list = ['000725.SZ', '002384.SZ', '601633.SH', '002384.SZ', '000100.SZ', '002594.SZ', '000333.SZ',
+                      '002460.SZ', '002230.SZ', '002415.SZ', '600660.SH', '601633.SH']
     result_list = []
     # 将多支股票放入策略中运算测试
     for code_item in stock_list:
@@ -211,10 +213,10 @@ if __name__ == '__main__':
     # todo 总结 筛选后的股票进行海龟交易回测利润
 
     # 筛选后资金流入的多支股票 进行海龟投资策略
-    check_capital_inflow_stock_profit(60, 20, 70000)
+    # check_capital_inflow_stock_profit(60, 20, 70000)
 
     # 默认的股票 进行海龟投资策略
-    # get_multi_stock_profit()
+    get_multi_stock_profit()
 
     # 多支股票明天的买入预期价位
     # get_multi_stock_enter_price()

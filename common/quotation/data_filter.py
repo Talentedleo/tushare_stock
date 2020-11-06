@@ -58,6 +58,10 @@ class Filter:
         else:
             df = pro.daily_basic(ts_code='', trade_date=self.last_bus_day,
                                  fields='ts_code,trade_date,turnover_rate,pe,total_mv')
+            # 如果没有数据, 拿一天前的数据
+            if len(df) == 0:
+                df = pro.daily_basic(ts_code='', trade_date=date_util.get_days_ago(1),
+                                     fields='ts_code,trade_date,turnover_rate,pe,total_mv')
             # ---------------------------------------
             # 自定义过滤条件, pe 静态市盈率, total_mv 总市值, turnover_rate 换手率
             df = df.drop(
@@ -108,6 +112,50 @@ class Filter:
             df = pro.moneyflow(trade_date=trade_date,
                                fields='ts_code,trade_date,net_mf_vol,net_mf_amount,buy_lg_amount,buy_elg_amount')
 
+            if len(df) != 0:
+                saver.save_csv(df, stock_name)
+        return df
+
+    # 每日涨跌停统计
+    @retry(wait_random_min=1000, wait_random_max=2000)
+    def get_limit_df(self, input_type='up', trade_date=None):
+        log.info('---- 每日涨跌停统计 ----')
+        if input_type is 'up':
+            limit_type = 'U'
+        else:
+            limit_type = 'D'
+        if trade_date is None:
+            trade_date = self.last_bus_day
+        # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
+        stock_name = saver.get_csv_data_name('stock_info', 'limit_' + input_type, end_date=trade_date)
+        if saver.check_file_existed(stock_name):
+            df = saver.read_from_csv(stock_name)
+        else:
+            # 获取某日涨停股票，并指定字段输出
+            df = pro.limit_list(trade_date=trade_date, limit_type=limit_type)
+            if len(df) != 0:
+                saver.save_csv(df, stock_name)
+        return df
+
+    # 时间段涨跌停统计
+    @retry(wait_random_min=1000, wait_random_max=2000)
+    def get_period_limit_df(self, input_type='up', days=None, start_date=None, end_date=None):
+        log.info('---- 时间段涨跌停统计 ----')
+        if input_type is 'up':
+            limit_type = 'U'
+        else:
+            limit_type = 'D'
+        if days is not None:
+            start_date = date_util.get_days_ago(days)
+            end_date = date_util.get_last_bus_day()
+        # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
+        stock_name = saver.get_csv_data_name('stock_info', 'limit_' + input_type + '_' + start_date,
+                                             end_date=end_date)
+        if saver.check_file_existed(stock_name):
+            df = saver.read_from_csv(stock_name)
+        else:
+            # 获取时间段统计信息
+            df = pro.limit_list(start_date=start_date, end_date=end_date, limit_type=limit_type)
             if len(df) != 0:
                 saver.save_csv(df, stock_name)
         return df
@@ -166,3 +214,5 @@ class Filter:
             return True
 
         return False
+
+    # todo 每日涨跌停统计

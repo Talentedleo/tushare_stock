@@ -67,6 +67,7 @@ if __name__ == '__main__':
 
     # 京东方A '000725.SZ'
     # 东山精密 '002384.SZ'
+    # 长城汽车 '601633.SH'
     # TCL科技 '000100.SZ'
     # 比亚迪 '002594.SZ'
     # 美的集团 '000333.SZ'
@@ -76,6 +77,7 @@ if __name__ == '__main__':
 
     drawer = DrawComponent('000725.SZ', 120)
     # drawer = DrawComponent('002384.SZ', 120)
+    # drawer = DrawComponent('601633.SH', 120)
     # drawer = DrawComponent('002647.SZ', 1 20)
     # drawer = DrawComponent('002594.SZ', 120)
     # drawer = DrawComponent('601012.SH', 120)
