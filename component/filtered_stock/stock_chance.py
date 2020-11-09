@@ -5,6 +5,7 @@ import pandas as pd
 import common.quotation.indicator as indicator
 from common.algorithm.data_statistics import find_most_popular_stock
 import common.algorithm.turnover_analyzer as turnover_analyzer
+import common.algorithm.money_flow_analyzer as money_analyzer
 from common.algorithm.zone_analyzer import check_new_high
 from common.quotation.data_filter import Filter
 from common.quotation.data_wrapper import Client
@@ -322,6 +323,28 @@ def find_turnover_stocks(choice='high', data_period=20, slope=0, graph_length=30
         # 绘图
         drawer = DrawComponent(stock, graph_length)
         drawer.get_turnover_graph(step)
+        drawer.get_atr_graph(step)
+    # 打印
+    for stock_info in slope_list:
+        log.info(stock_info)
+
+
+# 分析累加资金流入有机会的股票
+def find_money_flow_stocks(choice='high', data_period=20, slope=0, graph_length=30, step=5):
+    fil = Filter()
+    if choice is 'high':
+        # 优质公司
+        stocks_df = fil.get_filtered_stocks()
+    else:
+        # 所有公司
+        stocks_df = fil.get_all_stocks()
+    stock_list = stocks_df['ts_code'].tolist()
+    # 符合条件的绘图, 斜率越高, 换手率越高, 股票越活跃
+    result_list, slope_list = money_analyzer.analyse_money_flow_stocks(stock_list, data_period, slope)
+    for stock in result_list:
+        # 绘图
+        drawer = DrawComponent(stock, graph_length)
+        drawer.get_accumulative_money_flow_graph(step)
     # 打印
     for stock_info in slope_list:
         log.info(stock_info)
@@ -330,10 +353,11 @@ def find_turnover_stocks(choice='high', data_period=20, slope=0, graph_length=30
 if __name__ == '__main__':
     # todo 总结 数据选股
 
-    # 搜索高转手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
-    find_turnover_stocks('high', 5, 1, 20, 2)
+    # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
+    # find_turnover_stocks('high', 5, 1, 60, 5)
 
-    # todo 搜索资金流持续流入的股票, 寻找机会
+    # 搜索资金流持续流入的股票, 寻找机会
+    # find_money_flow_stocks('high', 5, 1, 10, 2)
 
     # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 资金流入超过市值一定比率.
     # draw_multi_company_capital_inflow_percent_graph(60, 5, 0.015, 60, 5)

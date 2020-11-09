@@ -52,6 +52,16 @@ class DrawComponent:
         graph.draw_field_compare_plot_bar(money_flow_df, 'net_mf_amount', '{} Stock Market'.format(self.stock_code),
                                           step)
 
+    def get_accumulative_money_flow_graph(self, step=10):
+        # 累加资金流向
+        money_flow_df = self.cli.get_money_flow_df()
+        money_flow_df['close'] = self.stock_df['close']
+        money_flow_df = money_flow_df[::-1]
+        money_flow_df['total_net'] = money_flow_df['net_mf_amount'].cumsum(axis=0)
+        money_flow_df = money_flow_df[::-1]
+        graph.draw_field_compare_plot_bar(money_flow_df, 'total_net', '{} Stock Market'.format(self.stock_code),
+                                          step)
+
     def get_index_compare_graph(self):
         # 和大盘走势比较
         # 日指数
@@ -75,8 +85,8 @@ if __name__ == '__main__':
     # 隆基股份 '601012.SH'
     # 分众传媒 '002027.SZ'
 
-    drawer = DrawComponent('000725.SZ', 120)
-    # drawer = DrawComponent('002384.SZ', 120)
+    # drawer = DrawComponent('000725.SZ', 120)
+    drawer = DrawComponent('002384.SZ', 120)
     # drawer = DrawComponent('601633.SH', 120)
     # drawer = DrawComponent('002647.SZ', 1 20)
     # drawer = DrawComponent('002594.SZ', 120)
