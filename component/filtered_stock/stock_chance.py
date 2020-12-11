@@ -1,11 +1,13 @@
 import math
+import time
 
 import pandas as pd
 
-import common.quotation.indicator as indicator
-from common.algorithm.data_statistics import find_most_popular_stock
-import common.algorithm.turnover_analyzer as turnover_analyzer
 import common.algorithm.money_flow_analyzer as money_analyzer
+import common.algorithm.turnover_analyzer as turnover_analyzer
+import common.quotation.indicator as indicator
+import common.utils.tool as tool
+from common.algorithm.data_statistics import find_most_popular_stock
 from common.algorithm.zone_analyzer import check_new_high
 from common.quotation.data_filter import Filter
 from common.quotation.data_wrapper import Client
@@ -14,8 +16,6 @@ from common.utils import mapping_util
 from common.utils.logger import Logger
 from component.compare_graph.draw_component import DrawComponent
 from strategy import oscillation_zone as strategy
-import common.utils.tool as tool
-import time
 
 log = Logger(__name__).logger
 
@@ -181,7 +181,7 @@ def get_capital_inflow_stock_percent_list(df_days=120, days_interval=10, target_
     company_list = []
     for _, df_row in info_df.iterrows():
         # 接口限制: 每分钟最多访问该接口300次
-        time.sleep(0.25)
+        # time.sleep(0.25)
         company = df_row['ts_code']
         name = df_row['name']
         industry = df_row['industry']
@@ -288,15 +288,15 @@ def draw_multi_company_capital_inflow_percent_graph(df_days=120, days_interval=1
 
 
 # [一天数据] 排名前面的个股资金流向
-def draw_one_day_capital_inflow_graph(top_num=20):
-    stocks_df = get_money_flow_stocks(top_num)
+def draw_one_day_capital_inflow_graph(top_num=20, trade_date=None):
+    stocks_df = get_money_flow_stocks(top_num, trade_date)
     # 绘制各股票一定时间段内资金流向图
     draw_stocks_money_flow_graph(stocks_df)
 
 
 # 沪深股通十大成交股
-def draw_sh_sz_top_graph():
-    stocks_df = get_top10_company()
+def draw_sh_sz_top_graph(trade_date=None):
+    stocks_df = get_top10_company(trade_date)
     # 绘制各股票一定时间段内资金流向图
     draw_stocks_money_flow_graph(stocks_df)
 
@@ -354,13 +354,26 @@ if __name__ == '__main__':
     # todo 总结 数据选股
 
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
-    # find_turnover_stocks('high', 5, 1, 60, 5)
+    find_turnover_stocks('high', 5, 1, 60, 5)
 
     # 搜索资金流持续流入的股票, 寻找机会
     # find_money_flow_stocks('high', 5, 1, 10, 2)
 
     # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 资金流入超过市值一定比率.
-    # draw_multi_company_capital_inflow_percent_graph(60, 5, 0.015, 60, 5)
+    # draw_multi_company_capital_inflow_percent_graph(60, 5, 0.02, 60, 5)
+
+    # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 单纯比较总资金流入量. 5天内持续流入超2亿的股票
+    # draw_multi_company_capital_inflow_amount_graph(60, 5, 20000, 60, 5)
+
+    # [一天数据] 排名前面的个股资金流向
+    # draw_one_day_capital_inflow_graph(20, '20201109')
+
+    # 找出好公司列表
+    # get_good_company_list(65, 2000000, 2)
+    # get_good_company_list()
+
+    # 沪深股通十大成交股
+    # draw_sh_sz_top_graph('20201109')
 
     # 历史沪深股通十大成交股统计, 热门的股票, 这里是20天内的数据统计, 取最后结果的前10数据
     # find_sh_sz_popular_stocks(20, date.get_now_date(), 10)
@@ -371,18 +384,5 @@ if __name__ == '__main__':
     # 分红送股
     # get_dividend_info()
 
-    # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 单纯比较总资金流入量. 5天内持续流入超2亿的股票
-    # draw_multi_company_capital_inflow_amount_graph(60, 5, 20000, 60, 5)
-
-    # [一天数据] 排名前面的个股资金流向
-    # draw_one_day_capital_inflow_graph(20)
-
     # 找出一段时间内振荡或者下降的股票
     # first_chance_df = get_oscillation_stock(field='atr')
-
-    # 找出好公司列表
-    # get_good_company_list(65, 2000000, 2)
-    # get_good_company_list()
-
-    # 沪深股通十大成交股
-    # draw_sh_sz_top_graph()

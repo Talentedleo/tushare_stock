@@ -76,23 +76,35 @@ if __name__ == '__main__':
     # todo 总结 选股后画图再次分析
 
     # 京东方A '000725.SZ'
-    # 东山精密 '002384.SZ'
     # 长城汽车 '601633.SH'
+    # 美的集团 '000333.SZ'
+    # 东山精密 '002384.SZ'
+    # 神州数码 '000034.SZ'
+    # 安宁股份 '002978.SZ'
+    # 桐昆股份 '601233.SH'
+    # 龙蟒佰利 '002601.SZ'
     # TCL科技 '000100.SZ'
     # 比亚迪 '002594.SZ'
-    # 美的集团 '000333.SZ'
     # 赣锋锂业 '002460.SZ'
     # 隆基股份 '601012.SH'
     # 分众传媒 '002027.SZ'
 
     # drawer = DrawComponent('000725.SZ', 120)
-    drawer = DrawComponent('002384.SZ', 120)
     # drawer = DrawComponent('601633.SH', 120)
+    drawer = DrawComponent('000333.SZ', 120)
+
+    # drawer = DrawComponent('002384.SZ', 120)
+    # drawer = DrawComponent('000034.SZ', 120)
+    # drawer = DrawComponent('002978.SZ', 120)
+    # drawer = DrawComponent('601233.SH', 120)
+    # drawer = DrawComponent('002601.SZ', 120)
+
     # drawer = DrawComponent('002647.SZ', 1 20)
     # drawer = DrawComponent('002594.SZ', 120)
     # drawer = DrawComponent('601012.SH', 120)
     # drawer = DrawComponent('002027.SZ', 120)
     # drawer = DrawComponent('002460.SZ', 120)
+    # drawer = DrawComponent('603825.SH', 120)
     drawer.get_atr_graph(5)
     #################################################
     drawer.get_money_flow_graph(5)

@@ -187,15 +187,14 @@ def get_multi_stock_profit(stock_list=[]):
         # 海康威视 '002415.SZ'
         # 福耀玻璃 '600660.SH'
         # 长城汽车 '601633.SH'
-        stock_list = ['000725.SZ', '002384.SZ', '601633.SH', '002384.SZ', '000100.SZ', '002594.SZ', '000333.SZ',
-                      '002460.SZ', '002230.SZ', '002415.SZ', '600660.SH', '601633.SH']
+        stock_list = ['000725.SZ', '002384.SZ', '000034.SZ', '002978.SZ']
     result_list = []
     # 将多支股票放入策略中运算测试
     for code_item in stock_list:
         remove_positions_db()
         # todo 使用场景: 大盘趋势好, 使用基本都赚. 修改买入和卖出 threshold
         # 区间突破就买入, 亏损超10%就止损
-        start_invest(code_item, 120, 90, 100000, 15, 10, result_list)
+        start_invest(code_item, 120, 30, 100000, 15, 10, result_list)
         # start_invest(code_item, 1850, 1825, 100000, 15, 10, result_list)
     log.info('*' * 50)
     # 打印总盈亏结果
