@@ -49,5 +49,15 @@ def transform_str_date_ago(date_str, days):
     return time.strftime(DATE_FORMATTER, days_ago.timetuple())
 
 
+# 字符串日期获取n天后的日期字符串
+def transform_str_date_after(date_str, days):
+    date_time = datetime.strptime(date_str, DATE_FORMATTER)
+    days_after = date_time + timedelta(days=days)
+    return time.strftime(DATE_FORMATTER, days_after.timetuple())
+
+
 if __name__ == '__main__':
     get_quarter_date_ago()
+
+    after = transform_str_date_after('20201130', 3)
+    print(after)
