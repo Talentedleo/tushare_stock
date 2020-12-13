@@ -89,8 +89,7 @@ if __name__ == '__main__':
     # 隆基股份 '601012.SH'
     # 分众传媒 '002027.SZ'
 
-    # drawer = DrawComponent('000725.SZ', 120)
-    drawer = DrawComponent('601187.SH', 120)
+    drawer = DrawComponent('000725.SZ', 120)
     # drawer = DrawComponent('601633.SH', 120)
     # drawer = DrawComponent('000333.SZ', 120)
 

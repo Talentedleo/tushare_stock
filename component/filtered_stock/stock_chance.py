@@ -365,11 +365,8 @@ def find_history_turnover_stocks(choice='high', total_period=120, data_section=5
     origin_dict = turnover_analyzer.analyse_history_timing(stock_list, total_period, data_section, slope)
     # 删除太密集的机遇点
     filtered_dict = back_testing.delete_observation_timing_date(origin_dict, observation_period)
-    profit_dict = {}
-    for stock, timing_list in filtered_dict.items():
-        # 回测数据
-        profit_rate_list = back_testing.check_timing_list_price(stock, timing_list, observation_period)
-        profit_dict[stock] = profit_rate_list
+    # 关键日期的利润
+    profit_dict = back_testing.check_timing_list_price(filtered_dict, observation_period)
     # 打印结果
     log.info(filtered_dict)
     log.info(profit_dict)
@@ -377,6 +374,7 @@ def find_history_turnover_stocks(choice='high', total_period=120, data_section=5
     stock_sum = 0
     rise = 0
     fall = 0
+    rate_sum = 0
     for profit_list in profit_dict.values():
         for profit_rate in profit_list:
             if profit_rate > 0:
@@ -384,18 +382,22 @@ def find_history_turnover_stocks(choice='high', total_period=120, data_section=5
             else:
                 fall += 1
             stock_sum += 1
+            rate_sum += profit_rate
     log.info('短期追热点 上涨比例: {:.4%}'.format(rise / stock_sum))
     log.info('短期追热点 下跌比例: {:.4%}'.format(fall / stock_sum))
+    log.info('短期追热点 平局利润率: {:.4%}'.format(rate_sum))
+    log.info('短期追热点 买100000元平均盈利: {}'.format(100000 * rate_sum))
 
 
 if __name__ == '__main__':
-    # todo 总结 数据选股
+    # todo 总结 数据选股(首先要大盘是牛市)
 
-    # 搜索一段时间内历史高换手率的 股票 突破日期
-    find_history_turnover_stocks('high', 1056, 5, 1, 3)
+    # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选5天或者6天
+    # find_history_turnover_stocks('high', 60, 5, 1, 5)
 
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
-    # find_turnover_stocks('high', 5, 1, 60, 5)
+    # data_period 应该为7, 因为有周末2天占了数据
+    find_turnover_stocks('high', 5, 1, 60, 5)
 
     # 搜索资金流持续流入的股票, 寻找机会
     # find_money_flow_stocks('high', 5, 1, 10, 2)
