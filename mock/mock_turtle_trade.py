@@ -187,7 +187,7 @@ def get_multi_stock_profit(stock_list=[]):
         # 海康威视 '002415.SZ'
         # 福耀玻璃 '600660.SH'
         # 长城汽车 '601633.SH'
-        stock_list = ['000725.SZ', '002384.SZ', '000034.SZ', '002978.SZ']
+        stock_list = ['000725.SZ', '002384.SZ', '601633.SH', '000333.SZ']
     result_list = []
     # 将多支股票放入策略中运算测试
     for code_item in stock_list:

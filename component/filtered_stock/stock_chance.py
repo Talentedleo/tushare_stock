@@ -393,11 +393,11 @@ if __name__ == '__main__':
     # todo 总结 数据选股(首先要大盘是牛市)
 
     # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选5天或者6天
-    # find_history_turnover_stocks('high', 60, 5, 1, 5)
+    find_history_turnover_stocks('high', 60, 5, 1, 5)
 
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
     # data_period 应该为7, 因为有周末2天占了数据
-    find_turnover_stocks('high', 5, 1, 60, 5)
+    # find_turnover_stocks('high', 5, 1, 60, 5)
 
     # 搜索资金流持续流入的股票, 寻找机会
     # find_money_flow_stocks('high', 5, 1, 10, 2)
