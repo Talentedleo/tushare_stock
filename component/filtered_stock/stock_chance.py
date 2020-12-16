@@ -314,6 +314,9 @@ def find_turnover_stocks(choice='high', data_period=20, slope=0, graph_length=30
     if choice is 'high':
         # 优质公司
         stocks_df = fil.get_filtered_stocks()
+    elif choice is 'const':
+        # 沪深成分股
+        stocks_df = fil.get_sh_sz_constituent_stock()
     else:
         # 所有公司
         stocks_df = fil.get_all_stocks()
@@ -336,6 +339,9 @@ def find_money_flow_stocks(choice='high', data_period=20, slope=0, graph_length=
     if choice is 'high':
         # 优质公司
         stocks_df = fil.get_filtered_stocks()
+    elif choice is 'const':
+        # 沪深成分股
+        stocks_df = fil.get_sh_sz_constituent_stock()
     else:
         # 所有公司
         stocks_df = fil.get_all_stocks()
@@ -357,6 +363,9 @@ def find_history_turnover_stocks(choice='high', total_period=120, data_section=5
     if choice is 'high':
         # 优质公司
         stocks_df = fil.get_filtered_stocks()
+    elif choice is 'const':
+        # 沪深成分股
+        stocks_df = fil.get_sh_sz_constituent_stock()
     else:
         # 所有公司
         stocks_df = fil.get_all_stocks()
@@ -397,7 +406,7 @@ if __name__ == '__main__':
 
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
     # data_period 应该为7, 因为有周末2天占了数据
-    find_turnover_stocks('high', 7, 1, 60, 5)
+    find_turnover_stocks('const', 7, 1, 60, 5)
 
     # 搜索资金流持续流入的股票, 寻找机会
     # find_money_flow_stocks('high', 5, 1, 10, 2)

@@ -215,4 +215,22 @@ class Filter:
 
         return False
 
-    # todo 每日涨跌停统计
+    # 沪深股通成份股
+    @retry(wait_random_min=1000, wait_random_max=2000, stop_max_attempt_number=3)
+    def get_sh_sz_constituent_stock(self):
+        log.info('---- 获取沪深股通成份股 ----')
+        # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
+        stock_name = saver.get_csv_data_name('stock_info', 'hs_const', end_date=self.last_bus_day)
+        if saver.check_file_existed(stock_name):
+            df = saver.read_from_csv(stock_name)
+        else:
+            # 获取沪股通成分
+            sh_df = pro.hs_const(hs_type='SH')
+            # 获取深股通成分
+            sz_df = pro.hs_const(hs_type='SZ')
+            frames = [sh_df, sz_df]
+            df = pd.concat(frames)
+
+            if len(df) != 0:
+                saver.save_csv(df, stock_name)
+        return df

@@ -5,6 +5,7 @@ from common.utils import data_saver as saver
 from common.utils import date_util
 from common.utils import yml_loader as config
 from common.utils.logger import Logger
+from common.utils.tool import show_all_df
 
 log = Logger(__name__).logger
 
@@ -36,7 +37,7 @@ class Domestic_Economy:
 
 if __name__ == '__main__':
     # todo 总结 查看宏观经济情况
-
+    show_all_df()
     cli = Domestic_Economy()
     gdp_df = cli.get_gdp_df(start_q=date_util.get_quarter_date_ago(730))
     print(gdp_df)
