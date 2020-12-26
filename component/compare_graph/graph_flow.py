@@ -8,15 +8,15 @@ def draw_multi_graph_by_stock(stock):
 
     drawer.get_atr_graph(5)
     #################################################
-    # drawer.get_money_flow_graph(5)
+    drawer.get_money_flow_graph(5)
     #################################################
-    # drawer.get_turnover_graph(5)
+    drawer.get_turnover_graph(5)
     #################################################
-    # drawer.get_amount_graph()
+    drawer.get_amount_graph()
     #################################################
     # drawer.get_sma_graph()
     #################################################
-    # drawer.get_index_compare_graph()
+    drawer.get_index_compare_graph()
 
 
 # 绘制 多个 图形
@@ -50,10 +50,11 @@ if __name__ == '__main__':
     # 分众传媒 '002027.SZ'
 
     # 绘制 单个 股票图形
-    draw_multi_graph_by_stock('000725.SZ')
+    # draw_multi_graph_by_stock('000725.SZ')
 
     # 绘制 多个 股票图形
-    # draw_multi_graph_by_stock_list(['000725.SZ', '601633.SH'])
+    # draw_multi_graph_by_stock_list(['000725.SZ', '601633.SH', '000333.SZ'])
+    draw_multi_graph_by_stock_list(['601778.SH', '601016.SH'])
 
     # 绘制 沪深股通十大成交股 的图形
     # draw_multi_graph_by_top10_company()
