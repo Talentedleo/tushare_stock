@@ -1,0 +1,2 @@
+class ObjectError(Exception):
+    pass

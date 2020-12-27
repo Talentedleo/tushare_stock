@@ -28,8 +28,31 @@ class Position:
     def stock_code(self, value):
         self._stock_code = value
 
+    @property
+    def stock_num(self):
+        return self._stock_num
+
+    @stock_num.setter
+    def stock_num(self, value):
+        if not isinstance(value, int):
+            raise ValueError('num must be an integer!')
+        if value % 100 > 0:
+            raise ValueError('num must be the multiples of 100!')
+        self._stock_num = value
+
+    @property
+    def stock_price(self):
+        return self._stock_price
+
+    @stock_price.setter
+    def stock_price(self, value):
+        if value < 0:
+            raise ValueError('price must > 0 !')
+        self._stock_price = value
+
 
 if __name__ == '__main__':
     # 京东方A '000725.SZ'
-    stock = Position('000725.SZ', 100, 5.5)
-    print(stock.stock_code)
+    # stock = Position('000725.SZ', 100, 5.5)
+    left = 123 % 100
+    print(left)
