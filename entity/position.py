@@ -5,6 +5,7 @@ class Position:
     """
     持有的股票详情
     """
+
     def __init__(self, stock_code, stock_num, stock_price=None):
         # 股票代码 stock code
         self._stock_code = stock_code
@@ -49,6 +50,9 @@ class Position:
         if value < 0:
             raise ValueError('price must > 0 !')
         self._stock_price = value
+
+    def __str__(self):
+        return 'stock code: {}, cost price: {}, num: {}'.format(self.stock_code, self.stock_price, self.stock_num)
 
 
 if __name__ == '__main__':

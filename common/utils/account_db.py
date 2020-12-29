@@ -34,8 +34,7 @@ class AccountDb:
             for account_name in shelve_file:
                 tmp_account = shelve_file[account_name]
                 # # 封装account对象
-                account = Account(account_name, tmp_account['balance'], tmp_account['market_value'],
-                                  tmp_account['positions'])
+                account = Account(account_name, tmp_account['balance'], tmp_account['positions'])
                 account_list.append(account)
         finally:
             shelve_file.close()
@@ -57,7 +56,7 @@ class AccountDb:
             if account_name in shelve_file:
                 result = shelve_file[account_name]
                 # 封装account对象
-                exist_account = Account(account_name, result['balance'], result['market_value'], result['positions'])
+                exist_account = Account(account_name, result['balance'], result['positions'])
             else:
                 exist_account = None
         finally:
@@ -79,8 +78,7 @@ class AccountDb:
             # 先查询是否有该账号, 如果有, 抛出异常
             if AccountDb.query_account(Account(account_name)) is not None:
                 raise ObjectError('Object is already existing!')
-            shelve_file[account_name] = {'balance': account.balance, 'market_value': account.market_value,
-                                         'positions': account.positions}
+            shelve_file[account_name] = {'balance': account.balance, 'positions': account.positions}
             shelve_file.close()
             return True
         except ObjectError:
@@ -102,18 +100,9 @@ class AccountDb:
             exist_account = AccountDb.query_account(Account(account_name))
             if exist_account is None:
                 raise ObjectError('Object is None!')
-            # 如果要修改的account字段中无值, 使用原来的exist_account字段
             balance = account.balance
-            market_value = account.market_value
             positions = account.positions
-            if balance is None:
-                balance = exist_account.balance
-            if market_value is None:
-                market_value = exist_account.market_value
-            if positions is None:
-                positions = exist_account.positions
-            shelve_file[account_name] = {'balance': balance, 'market_value': market_value,
-                                         'positions': positions}
+            shelve_file[account_name] = {'balance': balance, 'positions': positions}
             shelve_file.close()
             return True
         except ObjectError:
