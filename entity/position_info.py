@@ -1,0 +1,77 @@
+# 只是用来打印用的
+from common.quotation.data_wrapper import Client
+
+
+class PositionInfo:
+    """
+    持有的股票详情
+    """
+
+    def __init__(self, stock_code, stock_num, cost_price):
+        # 股票代码 stock code
+        self._stock_code = stock_code
+        # 股票数量 stock num
+        self._stock_num = stock_num
+        # 成本价格 cost price
+        self._cost_price = cost_price
+        # 获取最新价格 latest_price
+        fields = 'ts_code,trade_date,close,high,low,vol,amount'
+        cli = Client(stock_code, 7, fields)
+        self._latest_price = cli.get_stock_df_daily()['close'].head(1).values[0]
+        # 盈利率
+        self._profit_rate = (self._latest_price - self._cost_price) / self._cost_price
+
+    @property
+    def stock_code(self):
+        return self._stock_code
+
+    @stock_code.setter
+    def stock_code(self, value):
+        self._stock_code = value
+
+    @property
+    def stock_num(self):
+        return self._stock_num
+
+    @stock_num.setter
+    def stock_num(self, value):
+        if not isinstance(value, int):
+            raise ValueError('num must be an integer!')
+        if value % 100 > 0:
+            raise ValueError('num must be the multiples of 100!')
+        self._stock_num = value
+
+    @property
+    def cost_price(self):
+        return self._cost_price
+
+    @cost_price.setter
+    def cost_price(self, value):
+        if value < 0:
+            raise ValueError('price must > 0 !')
+        self._cost_price = value
+
+    @property
+    def latest_price(self):
+        return self._latest_price
+
+    @latest_price.setter
+    def latest_price(self, value):
+        if value < 0:
+            raise ValueError('price must > 0 !')
+        self._latest_price = value
+
+    @property
+    def profit_rate(self):
+        return self._profit_rate
+
+    @profit_rate.setter
+    def profit_rate(self, value):
+        self._profit_rate = value
+
+    def __str__(self):
+        return 'stock code: {}, cost price: {}, latest price: {}, num: {}, profit rate: {:.2%}'.format(self._stock_code,
+                                                                                                       self._cost_price,
+                                                                                                       self._latest_price,
+                                                                                                       self._stock_num,
+                                                                                                       self._profit_rate)

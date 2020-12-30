@@ -52,7 +52,7 @@ class Position:
         self._stock_price = value
 
     def __str__(self):
-        return 'stock code: {}, cost price: {}, num: {}'.format(self.stock_code, self.stock_price, self.stock_num)
+        return 'stock code: {}, cost price: {}, num: {}'.format(self._stock_code, self._stock_price, self._stock_num)
 
 
 if __name__ == '__main__':

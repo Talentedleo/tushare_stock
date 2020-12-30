@@ -38,9 +38,9 @@ class Account:
 
     def __str__(self):
         show_str = ''
-        for po in self.positions:
+        for po in self._positions:
             show_str = show_str + po.stock_code + ' price: ' + str(po.stock_price) + ' num: ' + str(po.stock_num) + '; '
-        return 'account name: {}, balance: {}, positions: {}'.format(self.account_name, self.balance, show_str)
+        return 'account name: {}, balance: {}, positions: {}'.format(self._account_name, self._balance, show_str)
 
 
 if __name__ == '__main__':

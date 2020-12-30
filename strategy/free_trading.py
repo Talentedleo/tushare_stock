@@ -2,6 +2,7 @@ from common.quotation.data_wrapper import Client
 from common.utils.account_db import AccountDb
 from common.utils.logger import Logger
 from entity.position import Position
+from entity.position_info import PositionInfo
 
 log = Logger(__name__).logger
 
@@ -23,23 +24,36 @@ class FreeTrading:
         origin_account.balance = origin_account.balance + account.balance
         return AccountDb.update_account(origin_account)
 
-    # 查询账号总资产
+    # 查询账号总资产(总市值 + 余额)
     @staticmethod
     def query_account_total_market_value(account):
+        total_value, _ = FreeTrading.query_market_value_and_positions(account)
+        return total_value
+
+    # 查询账号总资产和头寸现价
+    @staticmethod
+    def query_market_value_and_positions(account):
         origin_account = AccountDb.query_account(account)
         # 股票详情
         positions = origin_account.positions
-        fields = 'ts_code,trade_date,close,high,low,vol,amount'
         # 余额
+        position_info_list = []
         total_value = origin_account.balance
         for position in positions:
             stock_code = position.stock_code
             stock_num = position.stock_num
-            cli = Client(stock_code, 7, fields)
-            # 因为拿到的数据是倒序的, 获取最新的价格
-            recent_price = cli.get_stock_df_daily()['close'].head(1).values[0]
-            total_value = total_value + recent_price * stock_num
-        return total_value
+            cost_price = position.stock_price
+            # position info对象
+            position_info = PositionInfo(stock_code, stock_num, cost_price)
+            position_info_list.append(position_info)
+            total_value = total_value + position_info.latest_price * stock_num
+        return total_value, position_info_list
+
+    # 查询股票现价和股数
+    @staticmethod
+    def query_account_market_positions(account):
+        _, position_info_list = FreeTrading.query_market_value_and_positions(account)
+        return position_info_list
 
     # 查询股票成本和股数
     @staticmethod
@@ -116,7 +130,6 @@ class FreeTrading:
         # 如果股数为0, 清除这条数据
         FreeTrading.clear_empty_stock(account)
         return is_sold
-
 
     # 注销账号
     @staticmethod
