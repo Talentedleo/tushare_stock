@@ -308,8 +308,21 @@ def find_sh_sz_popular_stocks(day_before=10, end_date=date.get_now_date(), top_n
     find_most_popular_stock(get_top10_company, day_before, end_date, top_num)
 
 
-# 分析高转手率有机会的股票
-def find_turnover_stocks(choice='high', data_period=20, slope=0, graph_length=30, step=5):
+# 绘图高转手率有机会的股票
+def draw_turnover_stocks(choice='high', data_period=20, slope=0, graph_length=30, step=5):
+    result_list, slope_list = find_turnover_stocks_data(choice, data_period, slope)
+    for stock in result_list:
+        # 绘图
+        drawer = DrawComponent(stock, graph_length)
+        drawer.get_turnover_graph(step)
+        drawer.get_atr_graph(step)
+    # 打印
+    for stock_info in slope_list:
+        log.info(stock_info)
+
+
+# 获取高转手率有机会的股票
+def find_turnover_stocks_data(choice='high', data_period=20, slope=0):
     fil = Filter()
     if choice is 'high':
         # 优质公司
@@ -322,15 +335,7 @@ def find_turnover_stocks(choice='high', data_period=20, slope=0, graph_length=30
         stocks_df = fil.get_all_stocks()
     stock_list = stocks_df['ts_code'].tolist()
     # 符合条件的绘图, 斜率越高, 换手率越高, 股票越活跃
-    result_list, slope_list = turnover_analyzer.analyse_turnover_stocks(stock_list, data_period, slope)
-    for stock in result_list:
-        # 绘图
-        drawer = DrawComponent(stock, graph_length)
-        drawer.get_turnover_graph(step)
-        drawer.get_atr_graph(step)
-    # 打印
-    for stock_info in slope_list:
-        log.info(stock_info)
+    return turnover_analyzer.analyse_turnover_stocks(stock_list, data_period, slope)
 
 
 # 分析累加资金流入有机会的股票
@@ -406,7 +411,7 @@ if __name__ == '__main__':
 
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
     # data_period 应该为7, 因为有周末2天占了数据
-    find_turnover_stocks('high', 5, 1, 60, 5)
+    draw_turnover_stocks('high', 5, 1, 60, 5)
 
     # 搜索资金流持续流入的股票, 寻找机会
     # find_money_flow_stocks('high', 5, 1, 10, 2)

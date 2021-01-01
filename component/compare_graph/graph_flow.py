@@ -51,10 +51,10 @@ if __name__ == '__main__':
 
     # 绘制 单个 股票图形
     # draw_multi_graph_by_stock('000725.SZ')
+    draw_multi_graph_by_stock('002008.SZ')
 
     # 绘制 多个 股票图形
     # draw_multi_graph_by_stock_list(['000725.SZ', '601633.SH', '000333.SZ'])
-    draw_multi_graph_by_stock_list(['601778.SH', '601016.SH'])
 
     # 绘制 沪深股通十大成交股 的图形
     # draw_multi_graph_by_top10_company()

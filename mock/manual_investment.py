@@ -23,9 +23,14 @@ def print_account_info(name):
     market_value, position_info_list = FreeTrading.query_market_value_and_positions(Account(name))
     print('账号 {} 总市值: {}'.format(name, market_value))
     for position_info in position_info_list:
-        print('股票: {} 持仓: {} 成本: {} 现价: {} 盈利率: {:.2%}'.format(position_info.stock_code, position_info.stock_num,
-                                                               position_info.cost_price, position_info.latest_price,
-                                                               position_info.profit_rate))
+        print(
+            '股票: {} {} 持仓: {} 成本: {} 现价: {} 盈利率: {:.2%} 实际盈亏: {:.2f}'.format(position_info.stock_code,
+                                                                             position_info.stock_name,
+                                                                             position_info.stock_num,
+                                                                             position_info.cost_price,
+                                                                             position_info.latest_price,
+                                                                             position_info.profit_rate,
+                                                                             position_info.profit))
 
 
 # 查看所有账号和头寸成本
@@ -48,11 +53,11 @@ if __name__ == '__main__':
 
     # 创建账号
     # create_account('t_20201230', 45390.98)
+    # 所有账号
+    # show_all_accounts()
+    # 账号信息
+    print_account_info('t_20201230')
     # 买入
     # buy_stock('t_20201230', '000725.SZ', 2000, 5.80)
     # 卖出
     # sell_stock('t_20201230', '000725.SZ', 2000)
-    # 账号信息
-    print_account_info('t_20201230')
-    # 所有账号
-    # show_all_accounts()

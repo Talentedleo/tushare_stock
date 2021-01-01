@@ -1,5 +1,6 @@
 # 只是用来打印用的
 from common.quotation.data_wrapper import Client
+from common.utils.mapping_util import get_stock_name
 
 
 class PositionInfo:
@@ -10,6 +11,8 @@ class PositionInfo:
     def __init__(self, stock_code, stock_num, cost_price):
         # 股票代码 stock code
         self._stock_code = stock_code
+        # 股票名 stock name
+        self._stock_name = get_stock_name(stock_code)
         # 股票数量 stock num
         self._stock_num = stock_num
         # 成本价格 cost price
@@ -20,6 +23,8 @@ class PositionInfo:
         self._latest_price = cli.get_stock_df_daily()['close'].head(1).values[0]
         # 盈利率
         self._profit_rate = (self._latest_price - self._cost_price) / self._cost_price
+        # 盈利金额
+        self._profit = (self._latest_price - self._cost_price) * self._stock_num
 
     @property
     def stock_code(self):
@@ -28,6 +33,14 @@ class PositionInfo:
     @stock_code.setter
     def stock_code(self, value):
         self._stock_code = value
+
+    @property
+    def stock_name(self):
+        return self._stock_name
+
+    @stock_name.setter
+    def stock_name(self, value):
+        self._stock_name = value
 
     @property
     def stock_num(self):
@@ -69,9 +82,15 @@ class PositionInfo:
     def profit_rate(self, value):
         self._profit_rate = value
 
+    @property
+    def profit(self):
+        return self._profit
+
+    @profit.setter
+    def profit(self, value):
+        self._profit = value
+
     def __str__(self):
-        return 'stock code: {}, cost price: {}, latest price: {}, num: {}, profit rate: {:.2%}'.format(self._stock_code,
-                                                                                                       self._cost_price,
-                                                                                                       self._latest_price,
-                                                                                                       self._stock_num,
-                                                                                                       self._profit_rate)
+        return 'stock code: {}, stock name: {}, cost price: {}, latest price: {}, num: {}, profit rate: {:.2%}, profit: {}'.format(
+            self._stock_code, self._stock_name, self._cost_price,
+            self._latest_price, self._stock_num, self._profit_rate, self._profit)
