@@ -3,6 +3,7 @@ import os
 from common.quotation.data_wrapper import Client
 from common.utils.db import ShelvePersistence
 from common.utils.logger import Logger
+from common.utils.mapping_util import get_stock_name_dict
 from strategy.turtle_trade import Turtle
 from component.filtered_stock.stock_chance import get_capital_inflow_stock_list
 
@@ -179,6 +180,7 @@ def get_multi_stock_profit(stock_list=[]):
         # 京东方A '000725.SZ'
         # 长城汽车 '601633.SH'
         # 美的集团 '000333.SZ'
+        # 华友钴业 '603799.SH'
         # 东山精密 '002384.SZ'
         # TCL科技 '000100.SZ'
         # 比亚迪 '002594.SZ'
@@ -186,7 +188,7 @@ def get_multi_stock_profit(stock_list=[]):
         # 科大讯飞 '002230.SZ'
         # 海康威视 '002415.SZ'
         # 福耀玻璃 '600660.SH'
-        stock_list = ['000725.SZ', '601633.SH', '000333.SZ']
+        stock_list = ['000725.SZ', '601633.SH', '000333.SZ', '603799.SH']
     result_list = []
     # 将多支股票放入策略中运算测试
     for code_item in stock_list:
@@ -197,8 +199,10 @@ def get_multi_stock_profit(stock_list=[]):
         # start_invest(code_item, 1850, 1825, 100000, 15, 10, result_list)
     log.info('*' * 50)
     # 打印总盈亏结果
+    stock_mapping_dict = get_stock_name_dict(stock_list)
     for stock_item in result_list:
-        log.info(stock_item)
+        stock_code = stock_item.split(' ')[0]
+        log.info('{} {}'.format(stock_mapping_dict[stock_code], stock_item))
 
 
 # 筛选后资金流入的多支股票 进行海龟投资策略

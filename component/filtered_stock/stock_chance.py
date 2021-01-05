@@ -15,6 +15,7 @@ from common.quotation.data_wrapper import Client
 from common.utils import date_util as date
 from common.utils import mapping_util
 from common.utils.logger import Logger
+from common.utils.mapping_util import get_stock_name_dict
 from component.compare_graph.draw_component import DrawComponent
 import component.back_testing.data_back_testing as back_testing
 from strategy import oscillation_zone as strategy
@@ -318,8 +319,10 @@ def draw_turnover_stocks(choice='high', data_period=20, slope=0, graph_length=30
         drawer.get_turnover_graph(step)
         drawer.get_atr_graph(step)
     # 打印
+    stock_mapping_dict = get_stock_name_dict(result_list)
     for stock_info in slope_list:
-        log.info(stock_info)
+        stock_code = stock_info.split(' ')[0]
+        log.info('{} {}'.format(stock_mapping_dict[stock_code], stock_info))
 
 
 # 获取高转手率有机会的股票
@@ -398,10 +401,12 @@ def find_history_turnover_stocks(choice='high', total_period=120, data_section=5
                 fall += 1
             stock_sum += 1
             rate_sum += profit_rate
+    # 平均利润
+    average_profit_rate = rate_sum / stock_sum
     log.info('短期追热点 上涨比例: {:.4%}'.format(rise / stock_sum))
     log.info('短期追热点 下跌比例: {:.4%}'.format(fall / stock_sum))
-    log.info('短期追热点 平局利润率: {:.4%}'.format(rate_sum))
-    log.info('短期追热点 买100000元平均盈利: {}'.format(100000 * rate_sum))
+    log.info('短期追热点 平局利润率: {:.4%}'.format(average_profit_rate))
+    log.info('短期追热点 买100000元平均盈利: {}'.format(100000 * average_profit_rate))
 
 
 if __name__ == '__main__':
@@ -412,7 +417,7 @@ if __name__ == '__main__':
 
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
     # data_period 应该为7, 因为有周末2天占了数据
-    draw_turnover_stocks('high', 5, 0, 60, 5)
+    draw_turnover_stocks('const', 5, 1, 60, 5)
 
     # 搜索资金流持续流入的股票, 寻找机会
     # find_money_flow_stocks('high', 5, 1, 10, 2)
