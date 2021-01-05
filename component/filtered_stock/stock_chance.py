@@ -7,6 +7,7 @@ import common.algorithm.money_flow_analyzer as money_analyzer
 import common.algorithm.turnover_analyzer as turnover_analyzer
 import common.quotation.indicator as indicator
 import common.utils.tool as tool
+from Exception.calculation_error import CalculationError
 from common.algorithm.data_statistics import find_most_popular_stock
 from common.algorithm.zone_analyzer import check_new_high
 from common.quotation.data_filter import Filter
@@ -253,7 +254,7 @@ def get_dividend_statistics(day=int(date.get_now_date()), before_day=2, after_da
             else:
                 fall_count += 1
             total_count += 1
-        except Exception:
+        except CalculationError:
             log.error('---- calc error ----')
             continue
     log.info('rise percent: {}%'.format((rise_count / total_count) * 100))
@@ -411,7 +412,7 @@ if __name__ == '__main__':
 
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
     # data_period 应该为7, 因为有周末2天占了数据
-    # draw_turnover_stocks('high', 5, 1, 60, 5)
+    draw_turnover_stocks('high', 5, 0, 60, 5)
 
     # 搜索资金流持续流入的股票, 寻找机会
     # find_money_flow_stocks('high', 5, 1, 10, 2)

@@ -17,7 +17,7 @@ def get_turnover_atr_rise_stocks(choice='high', turnover_slope=1, turnover_slope
     """
     result_list, _ = find_turnover_stocks_data(choice, turnover_slope_period, turnover_slope)
     potential_stocks = analyse_atr_stocks(result_list, atr_slope, atr_slope_period, data_period)
-    print(potential_stocks)
+    # print(potential_stocks[:3])
     return potential_stocks
 
 

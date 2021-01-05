@@ -5,6 +5,9 @@ from common.quotation.data_wrapper import Client
 
 
 # 找出换手率异动的股票
+from common.utils.mapping_util import get_stock_name
+
+
 def analyse_turnover_stocks(stock_list, data_period=20, slope=0):
     """
     :param stock_list: 需要计算的股票代码列表
@@ -33,7 +36,7 @@ def analyse_turnover_stocks(stock_list, data_period=20, slope=0):
             # k[0] 斜率 大于0, 表示上升趋势
             if k[0] > slope:
                 result_list.append(stock)
-                slope_list.append(stock + ' : ' + str(k[0]))
+                slope_list.append(stock + '  ' + get_stock_name(stock) + '  ' + str(k[0]))
     return result_list, slope_list
 
 

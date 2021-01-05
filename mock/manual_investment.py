@@ -53,11 +53,13 @@ if __name__ == '__main__':
 
     # 创建账号
     # create_account('t_20201230', 45390.98)
+    # create_account('t_20210101', 45390.98)
     # 所有账号
     # show_all_accounts()
     # 账号信息
-    print_account_info('t_20201230')
+    # print_account_info('t_20201230')
+    print_account_info('t_20210101')
     # 买入
-    # buy_stock('t_20201230', '000725.SZ', 2000, 5.80)
+    # buy_stock('t_20210101', '603799.SH', 100, 87.20)
     # 卖出
     # sell_stock('t_20201230', '000725.SZ', 2000)
