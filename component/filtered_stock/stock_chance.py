@@ -393,6 +393,7 @@ def find_history_turnover_stocks(choice='high', total_period=120, data_section=5
     rise = 0
     fall = 0
     rate_sum = 0
+    total_money = 100000
     for profit_list in profit_dict.values():
         for profit_rate in profit_list:
             if profit_rate > 0:
@@ -401,12 +402,11 @@ def find_history_turnover_stocks(choice='high', total_period=120, data_section=5
                 fall += 1
             stock_sum += 1
             rate_sum += profit_rate
-    # 平均利润
-    average_profit_rate = rate_sum / stock_sum
-    log.info('短期追热点 上涨比例: {:.4%}'.format(rise / stock_sum))
-    log.info('短期追热点 下跌比例: {:.4%}'.format(fall / stock_sum))
-    log.info('短期追热点 平局利润率: {:.4%}'.format(average_profit_rate))
-    log.info('短期追热点 买100000元平均盈利: {}'.format(100000 * average_profit_rate))
+            total_money = total_money * (1 + profit_rate)
+    log.info('短期追热点 上涨比例: {:.2%}'.format(rise / stock_sum))
+    log.info('短期追热点 下跌比例: {:.2%}'.format(fall / stock_sum))
+    log.info('短期追热点 利润率总和: {:.2%}'.format(rate_sum))
+    log.info('短期追热点 10万元买股累计盈利: {:.2f}'.format(total_money))
 
 
 if __name__ == '__main__':
@@ -417,7 +417,7 @@ if __name__ == '__main__':
 
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
     # data_period 应该为7, 因为有周末2天占了数据
-    draw_turnover_stocks('const', 5, 1, 60, 5)
+    draw_turnover_stocks('high', 5, 1, 60, 5)
 
     # 搜索资金流持续流入的股票, 寻找机会
     # find_money_flow_stocks('high', 5, 1, 10, 2)
