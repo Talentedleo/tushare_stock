@@ -1,8 +1,11 @@
 import numpy as np
 
-import common.utils.tool as tool
 import common.quotation.indicator as indicator
+import common.utils.tool as tool
 from common.quotation.data_wrapper import Client
+from common.utils import yml_loader as config
+
+fields = config.get_value('DAILY_FIELDS')
 
 
 # 找出atr异动的股票
@@ -15,7 +18,6 @@ def analyse_atr_stocks(stock_list, slope, slope_period=5, data_period=120):
     :return:
     """
     tool.show_all_df()
-    fields = 'ts_code,trade_date,close,high,low,vol,amount'
     result_dict = {}
     for stock in stock_list:
         cli = Client(stock, data_period, fields)

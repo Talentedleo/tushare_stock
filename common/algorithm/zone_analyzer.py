@@ -1,10 +1,13 @@
-from common.quotation.data_wrapper import Client
 import numpy as np
+
+from common.quotation.data_wrapper import Client
+from common.utils import yml_loader as config
+
+fields = config.get_value('DAILY_FIELDS')
 
 
 # 判断指定股票, 指定日期附近, 区间内数据是否上升
 def check_new_high(ts_code, record_date, before_day, after_day):
-    fields = 'ts_code,trade_date,close,high,low,vol,amount'
     record_date = int(record_date)
     # 记录日期前的一段时间
     start_date = record_date - before_day

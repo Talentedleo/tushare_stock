@@ -1,5 +1,4 @@
 import math
-import time
 
 import pandas as pd
 
@@ -7,6 +6,7 @@ import common.algorithm.money_flow_analyzer as money_analyzer
 import common.algorithm.turnover_analyzer as turnover_analyzer
 import common.quotation.indicator as indicator
 import common.utils.tool as tool
+import component.back_testing.data_back_testing as back_testing
 from Exception.calculation_error import CalculationError
 from common.algorithm.data_statistics import find_most_popular_stock
 from common.algorithm.zone_analyzer import check_new_high
@@ -14,13 +14,14 @@ from common.quotation.data_filter import Filter
 from common.quotation.data_wrapper import Client
 from common.utils import date_util as date
 from common.utils import mapping_util
+from common.utils import yml_loader as config
 from common.utils.logger import Logger
 from common.utils.mapping_util import get_stock_name_dict
 from component.compare_graph.draw_component import DrawComponent
-import component.back_testing.data_back_testing as back_testing
 from strategy import oscillation_zone as strategy
 
 log = Logger(__name__).logger
+fields = config.get_value('DAILY_FIELDS')
 
 
 def get_oscillation_stock(field='close', rate=0.0155, days=30, period=5):
@@ -34,7 +35,6 @@ def get_oscillation_stock(field='close', rate=0.0155, days=30, period=5):
     """
     # 第一步, 过滤出最近下跌趋势的股票或者是区间稳定的股票
     # 过滤后的公司, 使用区间震荡策略, 找到机会
-    fields = 'ts_code,trade_date,close,high,low,vol,amount'
 
     cli = Filter()
     # 公司的详细信息
@@ -135,8 +135,6 @@ def get_capital_inflow_stock_list(df_days=120, days_interval=10, target_amount=0
     :param target_amount: 累加资金目标值(单位: 万元)
     :return: 筛选后的公司列表
     """
-    fields = 'ts_code,trade_date,close,high,low,vol,amount'
-
     fil = Filter()
     # 公司的详细信息
     info_df = fil.get_all_stocks()
@@ -173,8 +171,6 @@ def get_capital_inflow_stock_percent_list(df_days=120, days_interval=10, target_
     :param target_percent: 资金流入占市值比例目标值
     :return: 筛选后的公司列表
     """
-    fields = 'ts_code,trade_date,close,high,low,vol,amount'
-
     fil = Filter()
     # 公司的详细信息
     info_df = fil.get_all_stocks()

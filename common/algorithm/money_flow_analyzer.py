@@ -1,6 +1,9 @@
 import numpy as np
 
 from common.quotation.data_wrapper import Client
+from common.utils import yml_loader as config
+
+fields = config.get_value('DAILY_FIELDS')
 
 
 # 找出资金流异动的股票
@@ -11,7 +14,6 @@ def analyse_money_flow_stocks(stock_list, data_period=20, slope=0):
     :param slope: 计算一段时间内资金流总和的斜率, 越高, 越活跃
     :return:
     """
-    fields = 'ts_code,trade_date,close,high,low,vol,amount'
     result_list = []
     slope_list = []
     for stock in stock_list:

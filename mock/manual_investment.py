@@ -1,6 +1,10 @@
+from common.quotation.data_wrapper import Client
+from common.utils import yml_loader as config
 from entity.account import Account
 from entity.position import Position
 from strategy.free_trading import FreeTrading
+
+fields = config.get_value('DAILY_FIELDS')
 
 
 # 创建账号
@@ -10,7 +14,22 @@ def create_account(name, balance=100000.0):
 
 # 买入
 def buy_stock(name, stock_code, stock_num, price=None):
-    FreeTrading.buy_stock(Account(name), Position(stock_code, stock_num, price))
+    # 买入价格为None, 默认使用当天开盘价格 x 1.01来模拟买入
+    buy_price = generate_mock_open_price(stock_code, price)
+    FreeTrading.buy_stock(Account(name), Position(stock_code, stock_num, buy_price))
+
+
+# 当天开盘价格 x 1.01来得到模拟买入价格
+def generate_mock_open_price(stock_code, price=None):
+    if price is None:
+        # 如果不传价格, 查询最近一天的收盘价格
+        cli = Client(stock_code, 7, fields)
+        # 因为拿到的数据是倒序的
+        stock_price = cli.get_stock_df_daily()['open'].head(1).values[0]
+        # 模拟没估计好估价, 买高了
+        return float(stock_price) * 1.01
+    else:
+        return price
 
 
 # 卖出
@@ -63,8 +82,8 @@ if __name__ == '__main__':
     # 实际账号
     # print_account_info('t_20210101')
     # 买入
-    # buy_stock('t_20201230', '603087.SH', 100, 157.02 * 1.03)
-    # buy_stock('t_20201230', '600862.SH', 400, 33.98 * 1.03)
-    # buy_stock('t_20201230', '601168.SH', 200, 15.06 * 1.03)
+    # buy_stock('t_20201230', '603087.SH', 100)
+    # buy_stock('t_20201230', '600862.SH', 400)
+    # buy_stock('t_20201230', '601168.SH', 200)
     # 卖出
     # sell_stock('t_20201230', '000725.SZ', 2000)

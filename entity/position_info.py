@@ -1,6 +1,9 @@
 # 只是用来打印用的
 from common.quotation.data_wrapper import Client
+from common.utils import yml_loader as config
 from common.utils.mapping_util import get_stock_name
+
+fields = config.get_value('DAILY_FIELDS')
 
 
 class PositionInfo:
@@ -18,7 +21,6 @@ class PositionInfo:
         # 成本价格 cost price
         self._cost_price = cost_price
         # 获取最新价格 latest_price
-        fields = 'ts_code,trade_date,close,high,low,vol,amount'
         cli = Client(stock_code, 7, fields)
         self._latest_price = cli.get_stock_df_daily()['close'].head(1).values[0]
         # 盈利率

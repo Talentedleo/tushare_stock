@@ -2,6 +2,9 @@ import numpy as np
 
 import common.utils.tool as tool
 from common.quotation.data_wrapper import Client
+from common.utils import yml_loader as config
+
+fields = config.get_value('DAILY_FIELDS')
 
 
 # 找出换手率异动的股票
@@ -14,7 +17,6 @@ def analyse_turnover_stocks(stock_list, data_period=20, slope=0):
     :return:
     """
     tool.show_all_df()
-    fields = 'ts_code,trade_date,close,high,low,vol,amount'
     result_list = []
     slope_list = []
     for stock in stock_list:
@@ -49,7 +51,6 @@ def analyse_history_timing(stock_list, total_period=120, data_section=5, slope=1
     :return:
     """
     tool.show_all_df()
-    fields = 'ts_code,trade_date,close,high,low,vol,amount'
     result_dict = {}
     for stock in stock_list:
         cli = Client(stock, total_period, fields)

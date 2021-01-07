@@ -1,4 +1,7 @@
 from common.quotation.data_wrapper import Client
+from common.utils import yml_loader as config
+
+fields = config.get_value('DAILY_FIELDS')
 
 
 class Position:
@@ -14,7 +17,6 @@ class Position:
         # 股票价格 stock price
         if stock_price is None:
             # 如果不传价格, 查询最近一天的收盘价格
-            fields = 'ts_code,trade_date,close,high,low,vol,amount'
             cli = Client(self._stock_code, 7, fields)
             # 因为拿到的数据是倒序的
             self._stock_price = cli.get_stock_df_daily()['close'].head(1).values[0]

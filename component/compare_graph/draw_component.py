@@ -1,9 +1,11 @@
 import common.graph.graph_drawer as graph
 import common.quotation.indicator as indicator
 from common.quotation.data_wrapper import Client
+from common.utils import yml_loader as config
 from common.utils.logger import Logger
 
 log = Logger(__name__).logger
+fields = config.get_value('DAILY_FIELDS')
 
 
 class DrawComponent:
@@ -12,7 +14,7 @@ class DrawComponent:
         self.stock_code = stock_code
         # stock_code = '601377.SH'
         self.days = day
-        self.fields = 'ts_code,trade_date,close,high,low,vol,amount'
+        self.fields = fields
         self.cli = Client(self.stock_code, self.days, self.fields)
         # 日数据
         self.stock_df = self.cli.get_stock_df_daily()
@@ -64,6 +66,3 @@ class DrawComponent:
         # index_df = cli.get_index_df_weekly()
         log.info('---- 绘制股票和指数的比较图 ----')
         graph.draw_default_compare_plot(self.stock_df, index_df, '{} week data'.format(self.stock_code))
-
-
-

@@ -1,9 +1,11 @@
 # todo 股票编码 + 指定日期后一段时间内的涨跌情况统计
 from common.quotation.data_wrapper import Client
 from common.utils import date_util
+from common.utils import yml_loader as config
 from common.utils.logger import Logger
 
 log = Logger(__name__).logger
+fields = config.get_value('DAILY_FIELDS')
 
 
 # 观察指定日期之后, 股票价格涨跌情况
@@ -27,7 +29,6 @@ def check_timing_price(stock, stock_df, trade_date, observation_period=5):
 # 计算所有关键日期的利润
 def check_timing_list_price(stock_dict, observation_period=5):
     profit_dict = {}
-    fields = 'ts_code,trade_date,close,high,low,vol,amount'
     for stock, timing_list in stock_dict.items():
         # 回测数据
         start_date = str(timing_list[0])

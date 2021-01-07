@@ -1,13 +1,15 @@
 import os
 
 from common.quotation.data_wrapper import Client
+from common.utils import yml_loader as config
 from common.utils.db import ShelvePersistence
 from common.utils.logger import Logger
 from common.utils.mapping_util import get_stock_name_dict
-from strategy.turtle_trade import Turtle
 from component.filtered_stock.stock_chance import get_capital_inflow_stock_list
+from strategy.turtle_trade import Turtle
 
 log = Logger(__name__).logger
+fields = config.get_value('DAILY_FIELDS')
 
 
 # todo 注意: 2008年, 2015年股灾. 小心2022年
@@ -17,7 +19,7 @@ class TurtleWorkFlow:
         # 准备工作
         self.stock_code = stock_code
         self.days = days
-        self.fields = 'ts_code,trade_date,close,high,low,vol,amount'
+        self.fields = fields
         self.cli = Client(self.stock_code, self.days, self.fields)
         # 日数据
         self.stock_df = self.cli.get_stock_df_daily()
