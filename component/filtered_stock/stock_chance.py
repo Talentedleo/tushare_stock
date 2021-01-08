@@ -364,6 +364,15 @@ def find_money_flow_stocks(choice='high', data_period=20, slope=0, graph_length=
 
 # 搜索一段时间内历史高换手率的 股票 突破日期
 def find_history_turnover_stocks(choice='high', total_period=120, data_section=5, slope=1, observation_period=5):
+    """
+    一段时间内历史高换手率的 股票 突破日期 盈利
+    :param choice: 候选公司类型
+    :param total_period: 操作总的时间段
+    :param data_section: 分析数据的最小时间段单位
+    :param slope: 斜率
+    :param observation_period: 观察期后会买入
+    :return:
+    """
     fil = Filter()
     if choice is 'high':
         # 优质公司
@@ -382,14 +391,15 @@ def find_history_turnover_stocks(choice='high', total_period=120, data_section=5
     # 关键日期的利润
     profit_dict = back_testing.check_timing_list_price(filtered_dict, observation_period)
     # 打印结果
-    log.info(filtered_dict)
-    log.info(profit_dict)
+    stock_mapping_dict = get_stock_name_dict(filtered_dict.keys())
+    for stock, key_date in filtered_dict.items():
+        print('{} {} {} {}'.format(stock_mapping_dict[stock], stock, key_date, profit_dict[stock]))
     # 统计升跌情况
     stock_sum = 0
     rise = 0
     fall = 0
     rate_sum = 0
-    total_money = 100000
+    total_money = 50000
     for profit_list in profit_dict.values():
         for profit_rate in profit_list:
             if profit_rate > 0:
@@ -402,18 +412,18 @@ def find_history_turnover_stocks(choice='high', total_period=120, data_section=5
     log.info('短期追热点 上涨比例: {:.2%}'.format(rise / stock_sum))
     log.info('短期追热点 下跌比例: {:.2%}'.format(fall / stock_sum))
     log.info('短期追热点 利润率总和: {:.2%}'.format(rate_sum))
-    log.info('短期追热点 10万元买股累计盈利: {:.2f}'.format(total_money))
+    log.info('短期追热点 5万元买股累计盈利: {:.2f}'.format(total_money - 50000))
 
 
 if __name__ == '__main__':
     # todo 总结 数据选股(首先要大盘是牛市)
 
     # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选5天或者6天
-    # find_history_turnover_stocks('high', 30, 5, 1, 5)
+    find_history_turnover_stocks('high', 30, 5, 1, 4)
 
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
     # data_period 应该为7, 因为有周末2天占了数据
-    draw_turnover_stocks('high', 5, 1, 60, 5)
+    # draw_turnover_stocks('high', 5, 1, 60, 5)
 
     # 搜索资金流持续流入的股票, 寻找机会
     # find_money_flow_stocks('high', 5, 1, 10, 2)
