@@ -75,12 +75,12 @@ if __name__ == '__main__':
     # show_all_accounts()
     # 账号信息
     # 测试账号
-    print_account_info('t_20201230')
+    # print_account_info('t_20201230')
     # 实际账号
-    # print_account_info('t_20210101')
+    print_account_info('t_20210101')
     # 买入
     # buy_stock('t_20201230', '601360.SH', 700)
     # buy_stock('t_20201230', '603565.SH', 300)
     # 卖出
-    # sell_stock('t_20201230', '601360.SH', 700, 16.06)
-    # sell_stock('t_20201230', '603565.SH', 300, 27.28)
+    # sell_stock('t_20201230', '000725.SZ', 2000)
+    # sell_stock('t_20201230', '603087.SH', 100)

@@ -351,15 +351,17 @@ def find_money_flow_stocks(choice='high', data_period=20, slope=0, graph_length=
         # 所有公司
         stocks_df = fil.get_all_stocks()
     stock_list = stocks_df['ts_code'].tolist()
-    # 符合条件的绘图, 斜率越高, 换手率越高, 股票越活跃
+    # 符合条件的绘图, 斜率越高, 资金流入越高, 股票越活跃
     result_list, slope_list = money_analyzer.analyse_money_flow_stocks(stock_list, data_period, slope)
     for stock in result_list:
         # 绘图
         drawer = DrawComponent(stock, graph_length)
         drawer.get_accumulative_money_flow_graph(step)
     # 打印
+    stock_mapping_dict = get_stock_name_dict(result_list)
     for stock_info in slope_list:
-        log.info(stock_info)
+        stock_code = stock_info.split(' ')[0]
+        log.info('{} {}'.format(stock_mapping_dict[stock_code], stock_info))
 
 
 # 搜索一段时间内历史高换手率的 股票 突破日期
@@ -419,17 +421,17 @@ if __name__ == '__main__':
     # todo 总结 数据选股(首先要大盘是牛市)
 
     # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选5天或者6天
-    find_history_turnover_stocks('high', 30, 5, 1, 4)
+    # find_history_turnover_stocks('high', 30, 5, 1, 4)
 
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
     # data_period 应该为7, 因为有周末2天占了数据
-    # draw_turnover_stocks('high', 5, 1, 60, 5)
-
-    # 搜索资金流持续流入的股票, 寻找机会
-    # find_money_flow_stocks('high', 5, 1, 10, 2)
+    draw_turnover_stocks('high', 5, 1, 60, 5)
 
     # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 资金流入超过市值一定比率.
     # draw_multi_company_capital_inflow_percent_graph(60, 5, 0.02, 60, 5)
+
+    # 搜索资金流持续流入的股票, 寻找机会
+    # find_money_flow_stocks('high', 5, 5000, 10, 2)
 
     # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 单纯比较总资金流入量. 5天内持续流入超2亿的股票
     # draw_multi_company_capital_inflow_amount_graph(60, 5, 20000, 60, 5)
