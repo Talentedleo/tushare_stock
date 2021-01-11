@@ -1,4 +1,3 @@
-import math
 import os
 import shelve
 
@@ -6,7 +5,6 @@ import common.utils.tool as tool
 from Exception.object_error import ObjectError
 from common.utils.logger import Logger
 from entity.account import Account
-from entity.position import Position
 
 log = Logger(__name__).logger
 # 获取当前项目根目录
@@ -96,7 +94,7 @@ class AccountDb:
             shelve_file = AccountDb.open()
 
             account_name = account.account_name
-            # 先查询是否有该账号, 如果有, 抛出异常
+            # 先查询是否有该账号, 如果无, 抛出异常
             exist_account = AccountDb.query_account(Account(account_name))
             if exist_account is None:
                 raise ObjectError('Object is None!')

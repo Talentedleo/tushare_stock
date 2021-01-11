@@ -1,5 +1,6 @@
 from common.quotation.data_wrapper import Client
 from common.utils import yml_loader as config
+from common.utils.date_util import get_last_bus_day
 
 fields = config.get_value('DAILY_FIELDS')
 
@@ -9,7 +10,7 @@ class Position:
     持有的股票详情
     """
 
-    def __init__(self, stock_code, stock_num, stock_price=None):
+    def __init__(self, stock_code, stock_num, stock_price=None, trade_date=None):
         # 股票代码 stock code
         self._stock_code = stock_code
         # 股票数量 stock num
@@ -22,6 +23,11 @@ class Position:
             self._stock_price = cli.get_stock_df_daily()['close'].head(1).values[0]
         else:
             self._stock_price = stock_price
+        # 交易日期
+        if trade_date is None:
+            self._trade_date = get_last_bus_day()
+        else:
+            self._trade_date = trade_date
 
     @property
     def stock_code(self):
@@ -53,8 +59,17 @@ class Position:
             raise ValueError('price must > 0 !')
         self._stock_price = value
 
+    @property
+    def trade_date(self):
+        return self._trade_date
+
+    @trade_date.setter
+    def trade_date(self, value):
+        self._trade_date = value
+
     def __str__(self):
-        return 'stock code: {}, cost price: {}, num: {}'.format(self._stock_code, self._stock_price, self._stock_num)
+        return 'stock code: {}, cost price: {}, num: {}, trade date: {}'.format(self._stock_code, self._stock_price,
+                                                                                self._stock_num, self._trade_date)
 
 
 if __name__ == '__main__':

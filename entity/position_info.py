@@ -11,7 +11,7 @@ class PositionInfo:
     持有的股票详情
     """
 
-    def __init__(self, stock_code, stock_num, cost_price):
+    def __init__(self, stock_code, stock_num, cost_price, trade_date):
         # 股票代码 stock code
         self._stock_code = stock_code
         # 股票名 stock name
@@ -20,6 +20,8 @@ class PositionInfo:
         self._stock_num = stock_num
         # 成本价格 cost price
         self._cost_price = cost_price
+        # 交易日期
+        self._trade_date = trade_date
         # 获取最新价格 latest_price
         cli = Client(stock_code, 7, fields)
         self._latest_price = cli.get_stock_df_daily()['close'].head(1).values[0]
@@ -67,6 +69,14 @@ class PositionInfo:
         self._cost_price = value
 
     @property
+    def trade_date(self):
+        return self._trade_date
+
+    @trade_date.setter
+    def trade_date(self, value):
+        self._trade_date = value
+
+    @property
     def latest_price(self):
         return self._latest_price
 
@@ -93,6 +103,6 @@ class PositionInfo:
         self._profit = value
 
     def __str__(self):
-        return 'stock code: {}, stock name: {}, cost price: {}, latest price: {}, num: {}, profit rate: {:.2%}, profit: {}'.format(
-            self._stock_code, self._stock_name, self._cost_price,
-            self._latest_price, self._stock_num, self._profit_rate, self._profit)
+        return 'stock code: {}, stock name: {}, cost price: {}, latest price: {}, num: {}, profit rate: {:.2%}, profit: {}, trade date: {}'.format(
+            self._stock_code, self._stock_name, self._cost_price, self._latest_price, self._stock_num,
+            self._profit_rate, self._profit, self._trade_date)

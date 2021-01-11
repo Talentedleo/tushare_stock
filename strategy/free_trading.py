@@ -1,4 +1,3 @@
-from common.quotation.data_wrapper import Client
 from common.utils.account_db import AccountDb
 from common.utils.logger import Logger
 from entity.position import Position
@@ -43,8 +42,9 @@ class FreeTrading:
             stock_code = position.stock_code
             stock_num = position.stock_num
             cost_price = position.stock_price
+            trade_date = position.trade_date
             # position info对象
-            position_info = PositionInfo(stock_code, stock_num, cost_price)
+            position_info = PositionInfo(stock_code, stock_num, cost_price, trade_date)
             position_info_list.append(position_info)
             total_value = total_value + position_info.latest_price * stock_num
         return total_value, position_info_list
@@ -97,7 +97,7 @@ class FreeTrading:
                     break
             # 也有可能原来没买过这个股票, 直接添加
             if not is_modified:
-                origin_positions.append(Position(stock_code, num, price))
+                origin_positions.append(Position(stock_code, num, price, position.trade_date))
             # 修改数据
             is_bought = AccountDb.update_account(origin_account)
         return is_bought
