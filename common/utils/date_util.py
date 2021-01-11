@@ -2,6 +2,8 @@ import time
 from datetime import datetime, date
 from datetime import timedelta
 
+import pandas as pd
+
 DATE_FORMATTER = '%Y%m%d'
 
 
@@ -26,6 +28,12 @@ def get_last_bus_day():
         # if it's Sunday then make it Friday
         last_bus_day = last_bus_day - timedelta(days=2)
     return last_bus_day.strftime(DATE_FORMATTER)
+
+
+# 计算工作日的数量
+def calc_bus_day_num(day_before_str, day_after_str):
+    date_time_index = pd.bdate_range(day_before_str, day_after_str, freq='b')
+    return len(date_time_index)
 
 
 # 获取季度数据 start_q='2018Q1', end_q='2019Q3'
@@ -57,7 +65,5 @@ def transform_str_date_after(date_str, days):
 
 
 if __name__ == '__main__':
-    get_quarter_date_ago()
-
-    after = transform_str_date_after('20201130', 3)
-    print(after)
+    num = calc_bus_day_num('20210108', '20210125')
+    print(num)

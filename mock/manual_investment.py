@@ -1,5 +1,6 @@
 from common.quotation.data_wrapper import Client
 from common.utils import yml_loader as config
+from common.utils.date_util import calc_bus_day_num, get_now_date
 from entity.account import Account
 from entity.position import Position
 from strategy.free_trading import FreeTrading
@@ -44,14 +45,16 @@ def print_account_info(name):
     print('账号 {} 总市值: {:.2f} 余额: {:.2f}'.format(name, market_value, balance))
     for position_info in position_info_list:
         print(
-            '股票: {} {} 持仓: {} 成本: {:.2f} 现价: {:.2f} 盈利率: {:.2%} 实际盈亏: {:.2f} 买入日期: {}'.format(position_info.stock_code,
-                                                                                              position_info.stock_name,
-                                                                                              position_info.stock_num,
-                                                                                              position_info.cost_price,
-                                                                                              position_info.latest_price,
-                                                                                              position_info.profit_rate,
-                                                                                              position_info.profit,
-                                                                                              position_info.trade_date))
+            '股票: {} {} 持仓: {} 成本: {:.2f} 现价: {:.2f} 盈利率: {:.2%} 实际盈亏: {:.2f}   ==>   买入日期: {} 持股天数: {}'.format(
+                position_info.stock_code,
+                position_info.stock_name,
+                position_info.stock_num,
+                position_info.cost_price,
+                position_info.latest_price,
+                position_info.profit_rate,
+                position_info.profit,
+                position_info.trade_date,
+                calc_bus_day_num(position_info.trade_date, get_now_date())))
 
 
 # 查看所有账号和头寸成本
@@ -76,12 +79,12 @@ if __name__ == '__main__':
     # show_all_accounts()
     # 账号信息
     # 测试账号
-    print_account_info('t_mock')
+    # print_account_info('t_mock')
     # 实际账号
-    # print_account_info('t_real')
+    print_account_info('t_real')
     # 买入
     # buy_stock('t_mock', '601360.SH', 100)
-    # buy_stock('t_real', '000725.SZ', 100)
+    # buy_stock('t_real', '603087.SH', 100)
     # 卖出
     # sell_stock('t_mock', '000725.SZ', 2000)
     # sell_stock('t_real', '603087.SH', 100)
