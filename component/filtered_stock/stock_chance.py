@@ -364,15 +364,16 @@ def find_money_flow_stocks(choice='high', data_period=20, slope=0, graph_length=
         log.info('{} {}'.format(stock_mapping_dict[stock_code], stock_info))
 
 
-# 搜索一段时间内历史高换手率的 股票 突破日期
-def find_history_turnover_stocks(choice='high', total_period=120, data_section=5, slope=1, observation_period=5):
+# 搜索一段时间内历史高换手率的 股票 突破日期 一段日期后 必须卖出
+def find_history_turnover_stocks_sell_destiny_date(choice='high', total_period=120, data_section=5, slope=1,
+                                                   observation_period=5):
     """
     一段时间内历史高换手率的 股票 突破日期 盈利
     :param choice: 候选公司类型
     :param total_period: 操作总的时间段
     :param data_section: 分析数据的最小时间段单位
     :param slope: 斜率
-    :param observation_period: 观察期后会买入
+    :param observation_period: 观察期到卖出
     :return:
     """
     fil = Filter()
@@ -400,7 +401,7 @@ def find_history_turnover_stocks(choice='high', total_period=120, data_section=5
     stock_sum = 0
     rise = 0
     fall = 0
-    rate_sum = 0
+    rate_sum = 1
     total_money = 50000
     for profit_list in profit_dict.values():
         for profit_rate in profit_list:
@@ -409,23 +410,81 @@ def find_history_turnover_stocks(choice='high', total_period=120, data_section=5
             else:
                 fall += 1
             stock_sum += 1
-            rate_sum += profit_rate
-            total_money = total_money * (1 + profit_rate)
+            rate_sum = rate_sum * (1 + profit_rate)
+    rate_sum = rate_sum - 1
     log.info('短期追热点 上涨比例: {:.2%}'.format(rise / stock_sum))
     log.info('短期追热点 下跌比例: {:.2%}'.format(fall / stock_sum))
     log.info('短期追热点 利润率总和: {:.2%}'.format(rate_sum))
-    log.info('短期追热点 5万元买股累计盈利: {:.2f}'.format(total_money - 50000))
+    log.info('短期追热点 5万元买股累计盈利: {:.2f}'.format(total_money * rate_sum))
+
+
+# 搜索一段时间内历史高换手率的 股票 突破日期 有技巧地卖出
+def find_history_turnover_stocks_sell_skill_method(choice='high', total_period=120, data_section=5, slope=1,
+                                                   observation_period=5):
+    """
+    一段时间内历史高换手率的 股票 突破日期 盈利
+    :param choice: 候选公司类型
+    :param total_period: 操作总的时间段
+    :param data_section: 分析数据的最小时间段单位
+    :param slope: 斜率
+    :param observation_period: 观察期
+    :return:
+    """
+    fil = Filter()
+    if choice is 'high':
+        # 优质公司
+        stocks_df = fil.get_filtered_stocks()
+    elif choice is 'const':
+        # 沪深成分股
+        stocks_df = fil.get_sh_sz_constituent_stock()
+    else:
+        # 所有公司
+        stocks_df = fil.get_all_stocks()
+    stock_list = stocks_df['ts_code'].tolist()
+    # 符合条件的绘图, 斜率越高, 换手率越高, 股票越活跃
+    origin_dict = turnover_analyzer.analyse_history_timing(stock_list, total_period, data_section, slope)
+    # 删除太密集的机遇点
+    filtered_dict = back_testing.delete_observation_timing_date(origin_dict, observation_period)
+    # 关键日期的利润 {stock: [profit_rate, profit_rate]} 累计利润到5%-10%或者到了截止日期卖出
+    profit_dict = back_testing.check_skill_timing_list_price(filtered_dict, observation_period)
+    # 打印结果
+    stock_mapping_dict = get_stock_name_dict(filtered_dict.keys())
+    for stock, key_date in filtered_dict.items():
+        print('{} {} {} {}'.format(stock_mapping_dict[stock], stock, key_date, profit_dict[stock]))
+    # 统计升跌情况
+    stock_sum = 0
+    rise = 0
+    fall = 0
+    rate_sum = 1
+    total_money = 50000
+    for profit_list in profit_dict.values():
+        for profit_rate in profit_list:
+            if profit_rate > 0:
+                rise += 1
+            else:
+                fall += 1
+            stock_sum += 1
+            rate_sum = rate_sum * (1 + profit_rate)
+    # 盈利率
+    rate_sum = rate_sum - 1
+    log.info('短期追热点 上涨比例: {:.2%}'.format(rise / stock_sum))
+    log.info('短期追热点 下跌比例: {:.2%}'.format(fall / stock_sum))
+    log.info('短期追热点 利润率总和: {:.2%}'.format(rate_sum))
+    log.info('短期追热点 5万元买股累计盈利: {:.2f}'.format(total_money * rate_sum))
 
 
 if __name__ == '__main__':
     # todo 总结 数据选股(首先要大盘是牛市)
 
-    # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选5天或者6天
-    # find_history_turnover_stocks('high', 30, 5, 1, 4)
-
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
     # data_period 应该为7, 因为有周末2天占了数据
-    draw_turnover_stocks('high', 5, 1, 60, 5)
+    # draw_turnover_stocks('high', 5, 1, 60, 5)
+
+    # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 观察日期到卖出
+    # find_history_turnover_stocks_sell_destiny_date('high', 30, 5, 1, 4)
+
+    # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 有技巧地卖出
+    find_history_turnover_stocks_sell_skill_method('high', 30, 5, 1, 4)
 
     # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 资金流入超过市值一定比率.
     # draw_multi_company_capital_inflow_percent_graph(60, 5, 0.02, 60, 5)
