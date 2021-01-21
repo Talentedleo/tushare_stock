@@ -84,8 +84,8 @@ if __name__ == '__main__':
     # print_account_info('t_real')
     # 买入
     # buy_stock('t_mock', '003012.SZ', 800)
-    # buy_stock('t_real', '603087.SH', 100)
+    # buy_stock('t_real', '601633.SH', 400, 41.79)
     # 卖出
-    # sell_stock('t_mock', '601360.SH', 600)
+    # sell_stock('t_mock', '003012.SZ', 800)
     # sell_stock('t_mock', '603565.SH', 300)
     # sell_stock('t_real', '603087.SH', 100, 172.25)

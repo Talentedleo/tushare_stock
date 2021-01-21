@@ -59,16 +59,16 @@ def check_skill_timing_price(stock, stock_df, trade_date, observation_period):
     interval_df = stock_df.loc[(stock_df['trade_date'].apply(lambda x: int(x)) >= int(start_date))].head(
         observation_period)
     # 对interval_df做定制处理
-    print(interval_df)
     profit_rate = 0
     if len(interval_df) > 0:
+        # todo 收盘涨停是买不进的!
         buy_price = interval_df.head(1)['close'].values[0]
         sell_price = interval_df.tail(1)['close'].values[0]
         # 遍历interval_df, 如果有符合条件的, 就修改卖出价
         tmp_profit_rate = 1
         for _, df_row in interval_df[1:].iterrows():
             tmp_profit_rate = tmp_profit_rate * (1 + df_row['pct_chg'] / 100)
-            # 累计利润 > 5%, 并且当天涨幅 < 9.5%
+            # todo 是否还有改进空间? 累计利润 > 5%, 并且当天涨幅 < 9.5%(涨停表示明天还有盈利)
             if tmp_profit_rate - 1 > 0.05 and df_row['pct_chg'] < 9.5:
                 sell_price = df_row['close']
                 break
