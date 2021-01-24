@@ -18,6 +18,9 @@ def check_timing_price(stock, stock_df, trade_date, observation_period=5):
         observation_period)
     profit_rate = 0
     if len(interval_df) > 0:
+        # 收盘涨停是买不进的!
+        if interval_df.head(1)['pct_chg'].values[0] >= 9.8:
+            return 0
         buy_price = interval_df.head(1)['close'].values[0]
         sell_price = interval_df.tail(1)['close'].values[0]
         profit_rate = (sell_price - buy_price) / buy_price
@@ -61,7 +64,9 @@ def check_skill_timing_price(stock, stock_df, trade_date, observation_period):
     # 对interval_df做定制处理
     profit_rate = 0
     if len(interval_df) > 0:
-        # todo 收盘涨停是买不进的!
+        # 收盘涨停是买不进的!
+        if interval_df.head(1)['pct_chg'].values[0] >= 9.8:
+            return 0
         buy_price = interval_df.head(1)['close'].values[0]
         sell_price = interval_df.tail(1)['close'].values[0]
         # 遍历interval_df, 如果有符合条件的, 就修改卖出价

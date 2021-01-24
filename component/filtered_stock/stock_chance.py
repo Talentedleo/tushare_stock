@@ -15,6 +15,7 @@ from common.quotation.data_wrapper import Client
 from common.utils import date_util as date
 from common.utils import mapping_util
 from common.utils import yml_loader as config
+from common.utils.all_data_db import AllDataDb
 from common.utils.logger import Logger
 from common.utils.mapping_util import get_stock_name_dict
 from component.compare_graph.draw_component import DrawComponent
@@ -309,6 +310,8 @@ def find_sh_sz_popular_stocks(day_before=10, end_date=date.get_now_date(), top_n
 # 绘图高转手率有机会的股票
 def draw_turnover_stocks(choice='high', data_period=20, slope=0, graph_length=30, step=5):
     result_list, slope_list = find_turnover_stocks_data(choice, data_period, slope)
+    # 保存
+    save_distinct_stocks(data_period, result_list, slope_list)
     for stock in result_list:
         # 绘图
         drawer = DrawComponent(stock, graph_length)
@@ -473,18 +476,103 @@ def find_history_turnover_stocks_sell_skill_method(choice='high', total_period=1
     log.info('短期追热点 5万元买股累计盈利: {:.2f}'.format(total_money * rate_sum))
 
 
+# 保存计算得到的数据
+def save_distinct_stocks(data_period, stock_list, slope_list):
+    # 将每一天生成的数据放到数据库, 读取数据库有没有重复的数据即可
+    bus_day = date.get_last_bus_day()
+    key_name = 'turnover_stocks_{}_{}'.format(data_period, bus_day)
+    AllDataDb.save_obj(key_name, {'stocks': stock_list, 'slope_list': slope_list})
+
+
+# 找出数据库在data period内的stocks
+def find_multi_day_db_stocks(data_period):
+    all_stock_set = set()
+    index = 0
+    # 可能遇到周末, 再加2天
+    while index < data_period + 2:
+        day_name = date.get_days_ago(index)
+        key_name = 'turnover_stocks_{}_{}'.format(data_period, day_name)
+        db_dict = AllDataDb.query_obj(key_name)
+        if db_dict is not None:
+            # 工作日
+            latest_bus_date = date.get_last_bus_day()
+            # 因为同一天也间隔1天, 需要减1天
+            bus_day_interval = date.calc_bus_day_num(day_name, latest_bus_date) - 1
+            if 1 <= bus_day_interval < data_period:
+                # eg: 20210122 当天的筛选结果, data period是4
+                # 20210121 会被过滤掉
+                # 20210120 会被过滤掉
+                # 20210119 会被过滤掉
+                result_list = db_dict['stocks']
+                all_stock_set.update(result_list)
+        index += 1
+    return all_stock_set
+
+
+# 找一段时间内不重现的高转手率有机会的股票
+def find_distinct_turnover_stocks(choice='high', data_period=20, slope=0):
+    result_list, slope_list = find_turnover_stocks_data(choice, data_period, slope)
+    # 保存
+    save_distinct_stocks(data_period, result_list, slope_list)
+    history_stocks = find_multi_day_db_stocks(data_period)
+    # 打印
+    stock_mapping_dict = get_stock_name_dict(result_list)
+    for stock_info in slope_list:
+        stock_code = stock_info.split(' ')[0]
+        # 不在最近几天的列表数据, 才显示
+        if stock_code not in history_stocks:
+            log.info('{} {}'.format(stock_mapping_dict[stock_code], stock_info))
+
+
+# 查询所有数据
+def query_turnover_data(data_period):
+    index = 0
+    # 可能遇到周末, 再加2天
+    while index < data_period + 2:
+        day_name = date.get_days_ago(index)
+        key_name = 'turnover_stocks_{}_{}'.format(data_period, day_name)
+        db_dict = AllDataDb.query_obj(key_name)
+        if db_dict is not None:
+            result_list = db_dict['stocks']
+            slope_list = db_dict['slope_list']
+            # 打印
+            print('日期: {}'.format(day_name))
+            print('key: {}'.format(key_name))
+            stock_mapping_dict = get_stock_name_dict(result_list)
+            for stock_info in slope_list:
+                stock_code = stock_info.split(' ')[0]
+                log.info('{} {}'.format(stock_mapping_dict[stock_code], stock_info))
+        index += 1
+
+
+# 删除一条记录
+def delete_turnover_data(key):
+    AllDataDb.delete_obj(key)
+    log.info('成功删除记录 {}'.format(key))
+
+
 if __name__ == '__main__':
     # todo 总结 数据选股(首先要大盘是牛市)
 
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
-    # data_period 应该为7, 因为有周末2天占了数据
-    # draw_turnover_stocks('high', 5, 1, 60, 5)
-
-    # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 观察日期到卖出
-    # find_history_turnover_stocks_sell_destiny_date('high', 30, 5, 1, 4)
+    # data_period 为4, 利润相对高
+    draw_turnover_stocks('high', 4, 1, 60, 5)
+    # 去重, 因为重复的可能已经机会不大了
+    # eg: 20210122 当天的筛选结果, data period是4
+    # 20210121 会被过滤掉
+    # 20210120 会被过滤掉
+    # 20210119 会被过滤掉
+    # find_distinct_turnover_stocks('high', 4, 1)
+    # 查询历史换手率数据
+    # query_turnover_data(4)
+    # 删除一条记录
+    # delete_turnover_data('turnover_stocks_4_20210118')
 
     # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 有技巧地卖出
-    find_history_turnover_stocks_sell_skill_method('high', 30, 5, 1, 4)
+    # find_history_turnover_stocks_sell_skill_method('high', 30, 4, 1, 4)
+
+    # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 观察日期到卖出
+    # find_history_turnover_stocks_sell_destiny_date('high', 30, 4, 1, 4)
 
     # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 资金流入超过市值一定比率.
     # draw_multi_company_capital_inflow_percent_graph(60, 5, 0.02, 60, 5)
