@@ -21,10 +21,12 @@ class Filter:
         self.last_bus_day = date_util.get_last_bus_day()
 
     @retry(wait_random_min=1000, wait_random_max=2000)
-    def get_all_stocks(self):
+    def get_all_stocks(self, trade_date=None):
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
         log.info('---- 获取股票列表数据 ----')
-        stock_list_name = saver.get_csv_data_name('stocks', 'all', end_date=self.last_bus_day)
+        if trade_date is None:
+            trade_date = self.last_bus_day
+        stock_list_name = saver.get_csv_data_name('stocks', 'all', end_date=trade_date)
         if saver.check_file_existed(stock_list_name):
             data_list = saver.read_from_csv(stock_list_name)
         else:
@@ -38,7 +40,7 @@ class Filter:
     @retry(wait_random_min=1000, wait_random_max=2000)
     def get_total_mv_df(self):
         log.info('---- 获取所有市值数据 ----')
-        file_name = saver.get_csv_data_name('stock_info', 'total_mv', end_date=date_util.get_last_bus_day())
+        file_name = saver.get_csv_data_name('stock_info', 'total_mv', end_date=self.last_bus_day)
         if saver.check_file_existed(file_name):
             df = saver.read_from_csv(file_name)
         else:
@@ -49,14 +51,16 @@ class Filter:
         return df
 
     @retry(wait_random_min=1000, wait_random_max=2000)
-    def get_filtered_stocks(self, pe=100, total_mv=1500000, turnover_rate=3):
+    def get_filtered_stocks(self, pe=100, total_mv=1500000, turnover_rate=3, trade_date=None):
         log.info('---- 筛选业绩好的公司 ----')
+        if trade_date is None:
+            trade_date = self.last_bus_day
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
-        stock_name = saver.get_csv_data_name('stock_info', 'recommended', end_date=self.last_bus_day)
+        stock_name = saver.get_csv_data_name('stock_info', 'recommended', end_date=trade_date)
         if saver.check_file_existed(stock_name):
             df = saver.read_from_csv(stock_name)
         else:
-            df = pro.daily_basic(ts_code='', trade_date=self.last_bus_day,
+            df = pro.daily_basic(ts_code='', trade_date=trade_date,
                                  fields='ts_code,trade_date,turnover_rate,pe,total_mv')
             # 如果没有数据, 拿一天前的数据
             if len(df) == 0:
@@ -217,10 +221,12 @@ class Filter:
 
     # 沪深股通成份股
     @retry(wait_random_min=1000, wait_random_max=2000, stop_max_attempt_number=3)
-    def get_sh_sz_constituent_stock(self):
+    def get_sh_sz_constituent_stock(self, trade_date=None):
         log.info('---- 获取沪深股通成份股 ----')
+        if trade_date is None:
+            trade_date = self.last_bus_day
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
-        stock_name = saver.get_csv_data_name('stock_info', 'hs_const', end_date=self.last_bus_day)
+        stock_name = saver.get_csv_data_name('stock_info', 'hs_const', end_date=trade_date)
         if saver.check_file_existed(stock_name):
             df = saver.read_from_csv(stock_name)
         else:

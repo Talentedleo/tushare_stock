@@ -369,7 +369,7 @@ def find_money_flow_stocks(choice='high', data_period=20, slope=0, graph_length=
 
 # 搜索一段时间内历史高换手率的 股票 突破日期 一段日期后 必须卖出
 def find_history_turnover_stocks_sell_destiny_date(choice='high', total_period=120, data_section=5, slope=1,
-                                                   observation_period=5):
+                                                   observation_period=5, start_date=None, end_date=None):
     """
     一段时间内历史高换手率的 股票 突破日期 盈利
     :param choice: 候选公司类型
@@ -377,12 +377,14 @@ def find_history_turnover_stocks_sell_destiny_date(choice='high', total_period=1
     :param data_section: 分析数据的最小时间段单位
     :param slope: 斜率
     :param observation_period: 观察期到卖出
+    :param start_date: 数据起始日期, 可为空
+    :param end_date: 数据结束日期, 可为空
     :return:
     """
     fil = Filter()
     if choice is 'high':
         # 优质公司
-        stocks_df = fil.get_filtered_stocks()
+        stocks_df = fil.get_filtered_stocks(trade_date=end_date)
     elif choice is 'const':
         # 沪深成分股
         stocks_df = fil.get_sh_sz_constituent_stock()
@@ -391,13 +393,14 @@ def find_history_turnover_stocks_sell_destiny_date(choice='high', total_period=1
         stocks_df = fil.get_all_stocks()
     stock_list = stocks_df['ts_code'].tolist()
     # 符合条件的绘图, 斜率越高, 换手率越高, 股票越活跃
-    origin_dict = turnover_analyzer.analyse_history_timing(stock_list, total_period, data_section, slope)
+    origin_dict = turnover_analyzer.analyse_history_timing(stock_list, total_period, data_section, slope,
+                                                           start_date, end_date)
     # 删除太密集的机遇点
     filtered_dict = back_testing.delete_observation_timing_date(origin_dict, observation_period)
     # 关键日期的利润
     profit_dict = back_testing.check_timing_list_price(filtered_dict, observation_period)
     # 打印结果
-    stock_mapping_dict = get_stock_name_dict(filtered_dict.keys())
+    stock_mapping_dict = get_stock_name_dict(filtered_dict.keys(), end_date)
     for stock, key_date in filtered_dict.items():
         print('{} {} {} {}'.format(stock_mapping_dict[stock], stock, key_date, profit_dict[stock]))
     # 统计升跌情况
@@ -423,7 +426,7 @@ def find_history_turnover_stocks_sell_destiny_date(choice='high', total_period=1
 
 # 搜索一段时间内历史高换手率的 股票 突破日期 有技巧地卖出
 def find_history_turnover_stocks_sell_skill_method(choice='high', total_period=120, data_section=5, slope=1,
-                                                   observation_period=5):
+                                                   observation_period=5, start_date=None, end_date=None):
     """
     一段时间内历史高换手率的 股票 突破日期 盈利
     :param choice: 候选公司类型
@@ -431,12 +434,14 @@ def find_history_turnover_stocks_sell_skill_method(choice='high', total_period=1
     :param data_section: 分析数据的最小时间段单位
     :param slope: 斜率
     :param observation_period: 观察期
+    :param start_date: 数据起始日期, 可为空
+    :param end_date: 数据结束日期, 可为空
     :return:
     """
     fil = Filter()
     if choice is 'high':
         # 优质公司
-        stocks_df = fil.get_filtered_stocks()
+        stocks_df = fil.get_filtered_stocks(trade_date=end_date)
     elif choice is 'const':
         # 沪深成分股
         stocks_df = fil.get_sh_sz_constituent_stock()
@@ -445,13 +450,14 @@ def find_history_turnover_stocks_sell_skill_method(choice='high', total_period=1
         stocks_df = fil.get_all_stocks()
     stock_list = stocks_df['ts_code'].tolist()
     # 符合条件的绘图, 斜率越高, 换手率越高, 股票越活跃
-    origin_dict = turnover_analyzer.analyse_history_timing(stock_list, total_period, data_section, slope)
+    origin_dict = turnover_analyzer.analyse_history_timing(stock_list, total_period, data_section, slope,
+                                                           start_date, end_date)
     # 删除太密集的机遇点
     filtered_dict = back_testing.delete_observation_timing_date(origin_dict, observation_period)
     # 关键日期的利润 {stock: [profit_rate, profit_rate]} 累计利润到5%-10%或者到了截止日期卖出
     profit_dict = back_testing.check_skill_timing_list_price(filtered_dict, observation_period)
     # 打印结果
-    stock_mapping_dict = get_stock_name_dict(filtered_dict.keys())
+    stock_mapping_dict = get_stock_name_dict(filtered_dict.keys(), end_date)
     for stock, key_date in filtered_dict.items():
         print('{} {} {} {}'.format(stock_mapping_dict[stock], stock, key_date, profit_dict[stock]))
     # 统计升跌情况
@@ -536,8 +542,9 @@ def query_turnover_data(data_period):
             result_list = db_dict['stocks']
             slope_list = db_dict['slope_list']
             # 打印
-            print('日期: {}'.format(day_name))
-            print('key: {}'.format(key_name))
+            log.info('*' * 50)
+            log.info('日期: {}'.format(day_name))
+            log.info('key: {}'.format(key_name))
             stock_mapping_dict = get_stock_name_dict(result_list)
             for stock_info in slope_list:
                 stock_code = stock_info.split(' ')[0]
@@ -556,7 +563,7 @@ if __name__ == '__main__':
 
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
     # data_period 为4, 利润相对高
-    draw_turnover_stocks('high', 4, 1, 60, 5)
+    # draw_turnover_stocks('high', 4, 1, 60, 5)
     # 去重, 因为重复的可能已经机会不大了
     # eg: 20210122 当天的筛选结果, data period是4
     # 20210121 会被过滤掉
@@ -570,9 +577,11 @@ if __name__ == '__main__':
 
     # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 有技巧地卖出
     # find_history_turnover_stocks_sell_skill_method('high', 30, 4, 1, 4)
+    find_history_turnover_stocks_sell_skill_method('high', 0, 4, 1, 4, start_date='20171226', end_date='20180126')
 
     # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 观察日期到卖出
     # find_history_turnover_stocks_sell_destiny_date('high', 30, 4, 1, 4)
+    # find_history_turnover_stocks_sell_destiny_date('high', 0, 4, 1, 4, start_date='20180115', end_date='20180215')
 
     # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 资金流入超过市值一定比率.
     # draw_multi_company_capital_inflow_percent_graph(60, 5, 0.02, 60, 5)

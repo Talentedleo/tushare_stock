@@ -43,19 +43,21 @@ def analyse_turnover_stocks(stock_list, data_period=20, slope=0):
 
 
 # 找出一段时间内换手率异动的股票的所有时间点
-def analyse_history_timing(stock_list, total_period=120, data_section=5, slope=1):
+def analyse_history_timing(stock_list, total_period=120, data_section=5, slope=1, start_date=None, end_date=None):
     """
     一段时间内换手率异动的股票的所有时间点
     :param stock_list: 股票列表
     :param total_period: 总时间区间
     :param data_section: 需要计算斜率的时间段
     :param slope: 换手率斜率
+    :param start_date: 数据起始日期, 可为空
+    :param end_date: 数据结束日期, 可为空
     :return:
     """
     tool.show_all_df()
     result_dict = {}
     for stock in stock_list:
-        cli = Client(stock, total_period, fields)
+        cli = Client(stock, total_period, fields, start_date, end_date)
         df = cli.get_stock_info_df()
         if not df.empty:
             # 按时间升序来展示

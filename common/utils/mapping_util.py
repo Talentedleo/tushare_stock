@@ -20,16 +20,16 @@ def get_mapping_info(origin_df, mapping_df):
 
 
 # 根据公司stock code列表获取对应公司名dict
-def get_stock_name_dict(stock_code_list):
+def get_stock_name_dict(stock_code_list, trade_date=None):
     cli = Filter()
     # 公司的详细信息
-    info_df = cli.get_all_stocks()
+    info_df = cli.get_all_stocks(trade_date)
     mapping_dict = {}
     for _, row in info_df.iterrows():
         mapping_dict[row['ts_code']] = row['name']
     result_dict = {}
     for stock_code in stock_code_list:
-        result_dict[stock_code] = mapping_dict[stock_code]
+        result_dict[stock_code] = mapping_dict.get(stock_code, '')
     return result_dict
 
 
