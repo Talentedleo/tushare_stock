@@ -465,6 +465,8 @@ def find_history_turnover_stocks_sell_skill_method(choice='high', total_period=1
     rise = 0
     fall = 0
     rate_sum = 1
+    result_profit = 0
+    # 本金
     total_money = 50000
     for profit_list in profit_dict.values():
         for profit_rate in profit_list:
@@ -474,12 +476,16 @@ def find_history_turnover_stocks_sell_skill_method(choice='high', total_period=1
                 fall += 1
             stock_sum += 1
             rate_sum = rate_sum * (1 + profit_rate)
-    # 盈利率
-    rate_sum = rate_sum - 1
-    log.info('短期追热点 上涨比例: {:.2%}'.format(rise / stock_sum))
-    log.info('短期追热点 下跌比例: {:.2%}'.format(fall / stock_sum))
-    log.info('短期追热点 利润率总和: {:.2%}'.format(rate_sum))
-    log.info('短期追热点 5万元买股累计盈利: {:.2f}'.format(total_money * rate_sum))
+    if stock_sum != 0:
+        # 盈利率
+        rate_sum = rate_sum - 1
+        result_profit = total_money * rate_sum
+        log.info('短期追热点 上涨比例: {:.2%}'.format(rise / stock_sum))
+        log.info('短期追热点 下跌比例: {:.2%}'.format(fall / stock_sum))
+        log.info('短期追热点 利润率总和: {:.2%}'.format(rate_sum))
+        log.info('短期追热点 5万元买股累计盈利: {:.2f}'.format(result_profit))
+    # 返回利润
+    return result_profit
 
 
 # 保存计算得到的数据
@@ -558,12 +564,24 @@ def delete_turnover_data(key):
     log.info('成功删除记录 {}'.format(key))
 
 
+# 计算一年有技巧卖出的利润
+def calc_one_year_turnover_stocks_sell_skill_method(start_date):
+    total_profit = 0
+    for i in range(12):
+        # 一个月的时间
+        end_date = date.transform_str_date_after(start_date, 30)
+        total_profit += find_history_turnover_stocks_sell_skill_method('high', 0, 4, 1, 4, start_date=start_date,
+                                                                       end_date=end_date)
+        start_date = end_date
+    log.info('短期追热点 5万元买股一年累计盈利: {:.2f}'.format(total_profit))
+
+
 if __name__ == '__main__':
     # todo 总结 数据选股(首先要大盘是牛市)
 
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
     # data_period 为4, 利润相对高
-    # draw_turnover_stocks('high', 4, 1, 60, 5)
+    # draw_turnover_stocks('high', 4, 1, 30, 5)
     # 去重, 因为重复的可能已经机会不大了
     # eg: 20210122 当天的筛选结果, data period是4
     # 20210121 会被过滤掉
@@ -576,12 +594,15 @@ if __name__ == '__main__':
     # delete_turnover_data('turnover_stocks_4_20210118')
 
     # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 有技巧地卖出
-    # find_history_turnover_stocks_sell_skill_method('high', 30, 4, 1, 4)
-    find_history_turnover_stocks_sell_skill_method('high', 0, 4, 1, 4, start_date='20171226', end_date='20180126')
+    find_history_turnover_stocks_sell_skill_method('high', 30, 4, 1, 4)
+    # 指定区间的盈利
+    # find_history_turnover_stocks_sell_skill_method('high', 0, 4, 1, 4, start_date='20180101', end_date='20180201')
+    # 一年的盈利
+    # calc_one_year_turnover_stocks_sell_skill_method('20190115')
 
     # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 观察日期到卖出
     # find_history_turnover_stocks_sell_destiny_date('high', 30, 4, 1, 4)
-    # find_history_turnover_stocks_sell_destiny_date('high', 0, 4, 1, 4, start_date='20180115', end_date='20180215')
+    # find_history_turnover_stocks_sell_destiny_date('high', 0, 4, 1, 4, start_date='20150617', end_date='20150717')
 
     # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 资金流入超过市值一定比率.
     # draw_multi_company_capital_inflow_percent_graph(60, 5, 0.02, 60, 5)

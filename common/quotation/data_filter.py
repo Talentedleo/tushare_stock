@@ -62,10 +62,12 @@ class Filter:
         else:
             df = pro.daily_basic(ts_code='', trade_date=trade_date,
                                  fields='ts_code,trade_date,turnover_rate,pe,total_mv')
-            # 如果没有数据, 拿一天前的数据
-            if len(df) == 0:
-                df = pro.daily_basic(ts_code='', trade_date=date_util.get_days_ago(1),
+            # 如果没有数据, 拿一天前的数据, 循环直到有数据
+            before_day = 1
+            while len(df) == 0:
+                df = pro.daily_basic(ts_code='', trade_date=date_util.get_days_ago(before_day),
                                      fields='ts_code,trade_date,turnover_rate,pe,total_mv')
+                before_day += 1
             # ---------------------------------------
             # 自定义过滤条件, pe 静态市盈率, total_mv 总市值, turnover_rate 换手率
             df = df.drop(
