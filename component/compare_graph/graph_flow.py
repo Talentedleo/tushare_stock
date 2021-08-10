@@ -46,6 +46,7 @@ if __name__ == '__main__':
 
     # 京东方A '000725.SZ'
     # 长城汽车 '601633.SH'
+    # 比亚迪 '002594.SZ'
     # 美的集团 '000333.SZ'
 
     # 甘李药业 '603087.SH'
@@ -53,12 +54,12 @@ if __name__ == '__main__':
     # 比亚迪 '002594.SZ'
 
     # 绘制 单个 股票图形
-    # draw_multi_graph_by_stock('000807.SZ')
-    # draw_multi_graph_by_stock('603087.SH')
+    draw_multi_graph_by_stock('002594.SZ')
+    # draw_multi_graph_by_stock('002594.SZ')
 
     # 绘制 多个 股票图形
-    # draw_multi_graph_by_stock_list(['000725.SZ', '601633.SH', '000333.SZ'])
-    draw_multi_graph_by_stock_list(['002008.SZ', '000963.SZ'])
+    # draw_multi_graph_by_stock_list(['000725.SZ', '601633.SH'])
+    # draw_multi_graph_by_stock_list(['000807.SZ', '600879.SH', '600516.SH', '600529.SH', '600507.SH', '600782.SH'])
 
     # 绘制换手率和atr筛选出来的股票
     # draw_turnover_atr_stocks()

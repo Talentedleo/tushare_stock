@@ -79,13 +79,13 @@ if __name__ == '__main__':
     # show_all_accounts()
     # 账号信息
     # 测试账号
-    # print_account_info('t_mock')
+    print_account_info('t_mock')
     # 实际账号
-    print_account_info('t_real')
+    # print_account_info('t_real')
     # 买入
-    # buy_stock('t_mock', '601216.SH', 2000)
-    # buy_stock('t_real', '000963.SZ', 200, 32.805)
+    # buy_stock('t_mock', '002127.SZ', 4800, 9.1)
+    # buy_stock('t_real', '600516.SH', 2000, 10.045)
     # buy_stock('t_real', '002008.SZ', 400, 51.015)
     # 卖出
-    # sell_stock('t_mock', '003012.SZ', 800)
-    # sell_stock('t_real', '000807.SZ', 1200)
+    # sell_stock('t_mock', '002127.SZ', 4800, 8.46)
+    # sell_stock('t_real', '002008.SZ', 400, 46.06)

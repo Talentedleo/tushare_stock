@@ -1,4 +1,5 @@
 import math
+import time
 
 import pandas as pd
 
@@ -180,8 +181,8 @@ def get_capital_inflow_stock_percent_list(df_days=120, days_interval=10, target_
     show_list = []
     company_list = []
     for _, df_row in info_df.iterrows():
-        # 接口限制: 每分钟最多访问该接口300次
-        # time.sleep(0.25)
+        # 接口限制: 每分钟最多访问该接口100次
+        time.sleep(0.6)
         company = df_row['ts_code']
         name = df_row['name']
         industry = df_row['industry']
@@ -582,6 +583,10 @@ if __name__ == '__main__':
     # 搜索高换手率的股票, 寻找机会, 可以修改slope斜率参数(注意, 也可能是庄家逃离!)
     # data_period 为4, 利润相对高
     # draw_turnover_stocks('high', 4, 1, 30, 5)
+
+    # [一天数据] 排名前面的个股资金流向
+    draw_one_day_capital_inflow_graph(20, '20210810')
+
     # 去重, 因为重复的可能已经机会不大了
     # eg: 20210122 当天的筛选结果, data period是4
     # 20210121 会被过滤掉
@@ -594,7 +599,7 @@ if __name__ == '__main__':
     # delete_turnover_data('turnover_stocks_4_20210118')
 
     # 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 有技巧地卖出
-    find_history_turnover_stocks_sell_skill_method('high', 30, 4, 1, 4)
+    # find_history_turnover_stocks_sell_skill_method('high', 30, 4, 1, 4)
     # 指定区间的盈利
     # find_history_turnover_stocks_sell_skill_method('high', 0, 4, 1, 4, start_date='20180101', end_date='20180201')
     # 一年的盈利
@@ -612,9 +617,6 @@ if __name__ == '__main__':
 
     # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 单纯比较总资金流入量. 5天内持续流入超2亿的股票
     # draw_multi_company_capital_inflow_amount_graph(60, 5, 20000, 60, 5)
-
-    # [一天数据] 排名前面的个股资金流向
-    # draw_one_day_capital_inflow_graph(20, '20201109')
 
     # 找出好公司列表
     # get_good_company_list(65, 2000000, 2)

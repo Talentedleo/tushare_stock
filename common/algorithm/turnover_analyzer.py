@@ -21,7 +21,7 @@ def analyse_turnover_stocks(stock_list, data_period=20, slope=0):
     slope_list = []
     for stock in stock_list:
         # 因为可能遇到周末, 数据量不够的情况, 需要再加几天
-        cli = Client(stock, data_period + 5, fields)
+        cli = Client(stock, data_period + 10, fields)
         df = cli.get_stock_info_df()
         df = df[:data_period]
         if not df.empty:

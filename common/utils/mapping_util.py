@@ -9,10 +9,17 @@ def get_mapping_info(origin_df, mapping_df):
     industry_list = []
     log.info('---- 正在匹配公司数据 ----')
     for _, row1 in origin_df.iterrows():
+        flag = False
         for _, row2 in mapping_df.iterrows():
             if row1['ts_code'] == row2['ts_code']:
                 name_list.append(row2['name'])
                 industry_list.append(row2['industry'])
+                flag = True
+                break
+        if flag is not True:
+            log.error('没匹配上')
+            name_list.append('')
+            industry_list.append('')
     origin_df['name'] = name_list
     origin_df['industry'] = industry_list
 
