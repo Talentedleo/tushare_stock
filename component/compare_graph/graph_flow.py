@@ -44,21 +44,19 @@ def draw_turnover_atr_stocks():
 if __name__ == '__main__':
     # todo 总结 选股后画图再次分析
 
-    # 京东方A '000725.SZ'
     # 长城汽车 '601633.SH'
-    # 比亚迪 '002594.SZ'
-    # 美的集团 '000333.SZ'
-
-    # 甘李药业 '603087.SH'
-    # TCL科技 '000100.SZ'
-    # 比亚迪 '002594.SZ'
+    # 福莱特 '601865.SH'
+    # 金风科技 '002202.SZ'
 
     # 绘制 单个 股票图形
-    draw_multi_graph_by_stock('002594.SZ')
-    # draw_multi_graph_by_stock('002594.SZ')
+    # draw_multi_graph_by_stock('002202.SZ')
+    draw_multi_graph_by_stock('601216.SH')
+    # draw_multi_graph_by_stock('002475.SZ')
 
     # 绘制 多个 股票图形
-    # draw_multi_graph_by_stock_list(['000725.SZ', '601633.SH'])
+    # 603993.SH 洛阳钼业
+    # 002008.SZ 大族激光
+    # draw_multi_graph_by_stock_list(['002475.SZ', '600460.SH', '601216.SH'])
     # draw_multi_graph_by_stock_list(['000807.SZ', '600879.SH', '600516.SH', '600529.SH', '600507.SH', '600782.SH'])
 
     # 绘制换手率和atr筛选出来的股票

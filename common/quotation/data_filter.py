@@ -51,7 +51,7 @@ class Filter:
         return df
 
     @retry(wait_random_min=1000, wait_random_max=2000)
-    def get_filtered_stocks(self, pe=100, total_mv=1500000, turnover_rate=3, trade_date=None):
+    def get_filtered_stocks(self, pe=200, total_mv=5000000, turnover_rate=3, trade_date=None):
         log.info('---- 筛选业绩好的公司 ----')
         if trade_date is None:
             trade_date = self.last_bus_day
