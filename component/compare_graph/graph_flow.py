@@ -47,16 +47,18 @@ if __name__ == '__main__':
     # 长城汽车 '601633.SH'
     # 福莱特 '601865.SH'
     # 金风科技 '002202.SZ'
+    # 徐工机械 '000425.SZ'
+    # 立讯精密 '002475.SZ'
+    # 603993.SH 洛阳钼业
+    # 002008.SZ 大族激光
 
     # 绘制 单个 股票图形
     # draw_multi_graph_by_stock('002202.SZ')
-    draw_multi_graph_by_stock('601216.SH')
+    # draw_multi_graph_by_stock('601216.SH')
     # draw_multi_graph_by_stock('002475.SZ')
 
     # 绘制 多个 股票图形
-    # 603993.SH 洛阳钼业
-    # 002008.SZ 大族激光
-    # draw_multi_graph_by_stock_list(['002475.SZ', '600460.SH', '601216.SH'])
+    draw_multi_graph_by_stock_list(['002475.SZ', '000425.SZ'])
     # draw_multi_graph_by_stock_list(['000807.SZ', '600879.SH', '600516.SH', '600529.SH', '600507.SH', '600782.SH'])
 
     # 绘制换手率和atr筛选出来的股票

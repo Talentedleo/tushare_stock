@@ -20,6 +20,7 @@ from common.utils.all_data_db import AllDataDb
 from common.utils.logger import Logger
 from common.utils.mapping_util import get_stock_name_dict
 from component.compare_graph.draw_component import DrawComponent
+from entity.balance_strategy import BalanceStrategy
 from strategy import oscillation_zone as strategy
 
 log = Logger(__name__).logger
@@ -585,7 +586,11 @@ if __name__ == '__main__':
     # draw_turnover_stocks('high', 4, 1, 30, 5)
 
     # [一天数据] 排名前面的个股资金流向
-    # draw_one_day_capital_inflow_graph(20, '20210924')
+    draw_one_day_capital_inflow_graph(20, '20210930')
+
+    # TODO 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 观察日期到卖出 拉长线赚更多, 指定一个月卖出
+    # find_history_turnover_stocks_sell_destiny_date('high', 60, 4, 1, 20)
+    # find_history_turnover_stocks_sell_destiny_date('high', 0, 4, 1, 20, start_date='20190105', end_date='20191230')
 
     # 去重, 因为重复的可能已经机会不大了
     # eg: 20210122 当天的筛选结果, data period是4
@@ -604,10 +609,6 @@ if __name__ == '__main__':
     # find_history_turnover_stocks_sell_skill_method('high', 0, 4, 1, 4, start_date='20180101', end_date='20180201')
     # 一年的盈利
     # calc_one_year_turnover_stocks_sell_skill_method('20190115')
-
-    # TODO 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 观察日期到卖出 拉长线赚更多, 指定一个月卖出
-    # find_history_turnover_stocks_sell_destiny_date('high', 60, 4, 1, 20)
-    # find_history_turnover_stocks_sell_destiny_date('high', 0, 4, 1, 20, start_date='20190101', end_date='20191230')
 
     # [多天数据] 根据资金流获取有机会的公司 单位: 万元, 资金流入超过市值一定比率.
     # draw_multi_company_capital_inflow_percent_graph(60, 5, 0.02, 60, 5)
