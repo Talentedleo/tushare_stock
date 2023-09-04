@@ -1,1 +1,2 @@
-TOKEN: 88d09f52cc9d301455ded3312c61d30b0b5d461c792f975f7dc3543a
+TOKEN: 
+DAILY_FIELDS: ts_code,trade_date,close,high,low,vol,amount,open,pct_chg
