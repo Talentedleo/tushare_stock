@@ -1,3 +1,5 @@
+import time
+
 import tushare as ts
 from retrying import retry
 
@@ -133,6 +135,8 @@ class Client:
             # 换手率tor，量比vr, 均线
             df = ts.pro_bar(ts_code=self.stock_code, start_date=self.start_date, end_date=self.end_date,
                             factors=['tor', 'vr'], ma=[5, 20, 60])
+            # 一分钟只能访问50次
+            time.sleep(1)
             if len(df) != 0:
                 saver.save_csv(df, file_name)
             else:

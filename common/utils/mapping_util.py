@@ -20,6 +20,8 @@ def get_mapping_info(origin_df, mapping_df):
             log.error('没匹配上')
             name_list.append('')
             industry_list.append('')
+    # origin_df.loc['name', 0] = name_list
+    # origin_df.loc['industry', 0] = industry_list
     origin_df['name'] = name_list
     origin_df['industry'] = industry_list
 

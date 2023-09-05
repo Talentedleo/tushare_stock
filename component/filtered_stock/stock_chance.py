@@ -329,10 +329,10 @@ def draw_turnover_stocks(choice='high', data_period=20, slope=0, graph_length=30
 # 获取高转手率有机会的股票
 def find_turnover_stocks_data(choice='high', data_period=20, slope=0):
     fil = Filter()
-    if choice is 'high':
+    if choice == 'high':
         # 优质公司
         stocks_df = fil.get_filtered_stocks()
-    elif choice is 'const':
+    elif choice == 'const':
         # 沪深成分股
         stocks_df = fil.get_sh_sz_constituent_stock()
     else:
@@ -346,10 +346,10 @@ def find_turnover_stocks_data(choice='high', data_period=20, slope=0):
 # 分析累加资金流入有机会的股票
 def find_money_flow_stocks(choice='high', data_period=20, slope=0, graph_length=30, step=5):
     fil = Filter()
-    if choice is 'high':
+    if choice == 'high':
         # 优质公司
         stocks_df = fil.get_filtered_stocks()
-    elif choice is 'const':
+    elif choice == 'const':
         # 沪深成分股
         stocks_df = fil.get_sh_sz_constituent_stock()
     else:
@@ -384,10 +384,10 @@ def find_history_turnover_stocks_sell_destiny_date(choice='high', total_period=1
     :return:
     """
     fil = Filter()
-    if choice is 'high':
+    if choice == 'high':
         # 优质公司
         stocks_df = fil.get_filtered_stocks(trade_date=end_date)
-    elif choice is 'const':
+    elif choice == 'const':
         # 沪深成分股
         stocks_df = fil.get_sh_sz_constituent_stock()
     else:
@@ -441,10 +441,10 @@ def find_history_turnover_stocks_sell_skill_method(choice='high', total_period=1
     :return:
     """
     fil = Filter()
-    if choice is 'high':
+    if choice == 'high':
         # 优质公司
         stocks_df = fil.get_filtered_stocks(trade_date=end_date)
-    elif choice is 'const':
+    elif choice == 'const':
         # 沪深成分股
         stocks_df = fil.get_sh_sz_constituent_stock()
     else:
@@ -586,9 +586,9 @@ if __name__ == '__main__':
     # draw_turnover_stocks('high', 4, 1, 30, 5)
 
     # [一天数据] 排名前面的个股资金流向
-    draw_one_day_capital_inflow_graph(20, '20210930')
+    draw_one_day_capital_inflow_graph(20, '20230904')
 
-    # TODO 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 观察日期到卖出 拉长线赚更多, 指定一个月卖出
+    # TODO 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 观察日Ï期到卖出 拉长线赚更多, 指定一个月卖出
     # find_history_turnover_stocks_sell_destiny_date('high', 60, 4, 1, 20)
     # find_history_turnover_stocks_sell_destiny_date('high', 0, 4, 1, 20, start_date='20190105', end_date='20191230')
 
