@@ -75,7 +75,7 @@ class Client:
         log.info('---- 单支股票数据 ----')
         # 单个股票的数据
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
-        file_name = saver.get_csv_name(date, self.stock_code, self.start_date, self.end_date)
+        file_name = saver.get_file_name(date, self.stock_code, self.start_date, self.end_date, '.csv')
         if saver.check_file_existed(file_name):
             df = saver.read_from_csv(file_name)
         else:
@@ -104,7 +104,7 @@ class Client:
         else:
             index_code = '399001.SZ'
 
-        file_name = saver.get_csv_name(date, index_code, self.start_date, self.end_date)
+        file_name = saver.get_file_name(date, index_code, self.start_date, self.end_date, '.csv')
         if saver.check_file_existed(file_name):
             df = saver.read_from_csv(file_name)
         else:
@@ -128,7 +128,7 @@ class Client:
         log.info('---- 获取股票换手率等通用数据: {} ----'.format(self.stock_code))
         # 通用行情接口, 换手率tor，量比vr, 均线
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
-        file_name = saver.get_csv_name('stock_info', self.stock_code, self.start_date, self.end_date)
+        file_name = saver.get_file_name('stock_info', self.stock_code, self.start_date, self.end_date, '.csv')
         if saver.check_file_existed(file_name):
             df = saver.read_from_csv(file_name)
         else:
@@ -148,7 +148,7 @@ class Client:
     def get_money_flow_df(self):
         log.info('---- 个股资金流向: {} ----'.format(self.stock_code))
         # 如果文件存在就读取已有的数据, 如果没有, 就缓存起来
-        file_name = saver.get_csv_name('stock_info', 'money_flow_' + self.stock_code, self.start_date, self.end_date)
+        file_name = saver.get_file_name('stock_info', 'money_flow_' + self.stock_code, self.start_date, self.end_date, '.csv')
         if saver.check_file_existed(file_name):
             df = saver.read_from_csv(file_name)
         else:

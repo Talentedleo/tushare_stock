@@ -45,8 +45,9 @@ class DrawComponent:
         # 每日收盘价 和 个股资金流向
         money_flow_df = self.cli.get_money_flow_df()
         money_flow_df['close'] = self.stock_df['close']
-        graph.draw_field_compare_plot_bar(money_flow_df, 'net_mf_amount', '{} Stock Market'.format(self.stock_code),
-                                          step)
+        if 'net_mf_amount' in money_flow_df:
+            graph.draw_field_compare_plot_bar(money_flow_df, 'net_mf_amount', '{} Stock Market'.format(self.stock_code),
+                                              step)
 
     def get_accumulative_money_flow_graph(self, step=10):
         # 累加资金流向

@@ -586,7 +586,7 @@ if __name__ == '__main__':
     # draw_turnover_stocks('high', 4, 1, 30, 5)
 
     # [一天数据] 排名前面的个股资金流向
-    draw_one_day_capital_inflow_graph(20, '20230904')
+    draw_one_day_capital_inflow_graph(20, '20230928')
 
     # TODO 搜索一段时间内历史高换手率的 股票 突破日期 观察天数选4天或者5天 观察日Ï期到卖出 拉长线赚更多, 指定一个月卖出
     # find_history_turnover_stocks_sell_destiny_date('high', 60, 4, 1, 20)

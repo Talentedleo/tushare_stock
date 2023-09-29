@@ -1,6 +1,9 @@
+import datetime
+
 from matplotlib import pyplot as plt
 
 from common.utils.logger import Logger
+from common.utils import data_saver as saver
 
 log = Logger(__name__).logger
 
@@ -119,7 +122,11 @@ def draw_compare_plot_bar(x1, y1, y2, x_label, y1_label, y2_label, title, step=1
     axs[0].grid(alpha=0.4)
 
     fig.suptitle(title)
-    plt.show()
+    file_name = saver.get_file_name('graph' + '/' + str(datetime.date.today()), title.replace(' ', ''),
+                                    str(x_label[0]), str(x_label[-1]), '.jpg')
+    # 保存图片
+    saver.save_graph(plt, file_name)
+    # plt.show()
 
 
 # 默认比较折线图方法

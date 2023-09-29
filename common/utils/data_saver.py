@@ -17,13 +17,22 @@ def save_csv(df, file_name):
     df.to_csv(file_path)
 
 
+def save_graph(plot, file_name):
+    file_path = base_dir + file_name
+    folder, _ = os.path.split(file_path)
+    # 创建文件夹
+    tool.create_dir(folder)
+    # 保存图片
+    plot.savefig(file_path)
+
+
 def read_from_csv(file_name):
     file_path = base_dir + file_name
     return pd.read_csv(file_path)
 
 
-def get_csv_name(pre, code, start_date, end_date):
-    return '/' + pre + '/' + code.replace('.', '') + '_' + start_date + '_' + end_date + '.csv'
+def get_file_name(pre, code, start_date, end_date, suffix):
+    return '/' + pre + '/' + code.replace('.', '') + '_' + start_date + '_' + end_date + suffix
 
 
 def get_csv_data_name(pre, name, end_date):
